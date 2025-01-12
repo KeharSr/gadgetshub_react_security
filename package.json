@@ -1,5 +1,5 @@
 {
-  "name": "lensify_frontend",
+  "name": "gadgetshub_frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -50,7 +50,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set HTTPS=true&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!axios)/\"",
     "eject": "react-scripts eject"
@@ -77,6 +77,7 @@
     "@shadcn/ui": "^0.0.4",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.3",
+    "webpack-dev-server": "^5.2.0"
   }
 }
