@@ -6,7 +6,7 @@ import Navbar from "../../components/navbar/Navbar";
 import { motion } from "framer-motion";
 import { Glasses, Loader, ChevronRight, ChevronLeft, Star } from "lucide-react";
 
-const PowerGlasses = () => {
+const MobilePhones = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setPage] = useState(1);
@@ -187,4 +187,4 @@ const PowerGlasses = () => {
   );
 };
 
-export default PowerGlasses;
+export default MobilePhones;

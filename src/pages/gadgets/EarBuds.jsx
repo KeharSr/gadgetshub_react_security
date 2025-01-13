@@ -6,7 +6,7 @@ import Navbar from '../../components/navbar/Navbar';
 import { motion } from 'framer-motion';
 import { Sun, Loader, ChevronLeft, ChevronRight,Star } from 'lucide-react';
 
-const SunGlasses = () => {
+const EarBuds = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -170,4 +170,4 @@ const SunGlasses = () => {
   );
 };
 
-export default SunGlasses;
+export default EarBuds;
