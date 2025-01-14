@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Toaster, toast } from "react-hot-toast";
-import { loginUserApi, verifyLoginOTPApi, resendLoginOTPApi } from "../../apis/Api";
-import { Mail, Lock } from 'lucide-react';
+import {
+  loginUserApi,
+  verifyLoginOTPApi,
+  resendLoginOTPApi,
+} from "../../apis/Api";
+import { Mail, Lock } from "lucide-react";
 import loginui from "../../assets/images/loginui.png";
 
 const Login = () => {
@@ -14,6 +18,7 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState("");
   const [googleToken, setGoogleToken] = useState("");
   const [googleId, setGoogleId] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
   const [role, setRole] = useState("user");
 
   // New OTP states
@@ -40,12 +45,20 @@ const Login = () => {
   // Modified login handler
   const handleLogin = (e) => {
     e.preventDefault();
+
     if (!validation()) {
       return;
     }
+
+    if (!captchaToken) {
+      toast.error("Please complete the CAPTCHA");
+      return;
+    }
+
     const data = {
       email: email,
       password: password,
+      recaptchaToken: captchaToken, // Pass the reCAPTCHA token
     };
 
     loginUserApi(data)
@@ -61,11 +74,9 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        if (error.response?.data?.message) {
-          toast.error(error.response.data.message);
-        } else {
-          toast.error("Login failed. Please try again.");
-        }
+        toast.error(
+          error.response?.data?.message || "Login failed. Please try again."
+        );
       });
   };
 
@@ -78,7 +89,7 @@ const Login = () => {
 
     const verificationData = {
       ...loginData,
-      otp: otp
+      otp: otp,
     };
 
     loginUserApi(verificationData)
@@ -123,8 +134,12 @@ const Login = () => {
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
         <Mail className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Verify Your Login</h2>
-        <p className="text-gray-600">We've sent a verification code to {email}</p>
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">
+          Verify Your Login
+        </h2>
+        <p className="text-gray-600">
+          We've sent a verification code to {email}
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -132,7 +147,7 @@ const Login = () => {
           <input
             type="text"
             className={`w-full px-4 py-3 text-center text-2xl tracking-widest border 
-              ${otpError ? 'border-red-300' : 'border-gray-200'} 
+              ${otpError ? "border-red-300" : "border-gray-200"} 
               rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none 
               transition-all duration-300 bg-white`}
             placeholder="Enter OTP"
@@ -167,13 +182,14 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
       <Toaster />
       <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
-        
         {/* Form Section */}
         <div className="w-full md:w-1/2 p-8 lg:p-12 bg-white">
           {!showOTPForm ? (
             <>
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back!</h2>
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                  Welcome Back!
+                </h2>
                 <p className="text-gray-600">Please login to continue</p>
               </div>
 
@@ -207,18 +223,25 @@ const Login = () => {
                       placeholder="Password"
                     />
                     {passwordError && (
-                      <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {passwordError}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <label className="flex items-center">
-                    <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" />
-                    <span className="ml-2 text-sm text-gray-600">Remember me</span>
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-4 w-4 text-blue-600"
+                    />
+                    <span className="ml-2 text-sm text-gray-600">
+                      Remember me
+                    </span>
                   </label>
-                  <Link 
-                    to="/forgetpassword" 
+                  <Link
+                    to="/forgetpassword"
                     className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                   >
                     Forgot Password?
@@ -227,14 +250,14 @@ const Login = () => {
 
                 <div className="flex justify-center">
                   <ReCAPTCHA
-                    sitekey="6LezGbUqAAAAAEGlXzgckrxE5ooEa5YqlCDUOKlU"
-                    onChange={(token) => setGoogleToken(token)}
+                    sitekey="6LezGbUqAAAAAEGlXzgckrxE5ooEa5YqlCDUOKlU" // Use your site key
+                    onChange={(token) => setCaptchaToken(token)} // Update token state
                   />
                 </div>
 
                 <button
                   type="submit"
-                  disabled={!googleToken}
+                  disabled={!captchaToken}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 
                     rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -244,7 +267,10 @@ const Login = () => {
 
               <p className="mt-8 text-center text-gray-600">
                 Don't have an account?{" "}
-                <Link to="/register" className="text-blue-600 hover:text-blue-800 font-medium">
+                <Link
+                  to="/register"
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
                   Register now
                 </Link>
               </p>
@@ -257,10 +283,10 @@ const Login = () => {
         {/* Image Section */}
         <div className="hidden md:block w-1/2 bg-gradient-to-br from-blue-500 to-purple-600 p-12">
           <div className="h-full flex items-center justify-center">
-            <img 
-              src={loginui} 
-              alt="Login" 
-              className="max-w-full h-auto rounded-xl shadow-2xl" 
+            <img
+              src={loginui}
+              alt="Login"
+              className="max-w-full h-auto rounded-xl shadow-2xl"
             />
           </div>
         </div>
