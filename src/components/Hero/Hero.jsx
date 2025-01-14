@@ -1,31 +1,38 @@
-
-
-
 import React from 'react';
-import Image1 from "../../assets/images/image1.jpg";
-import Image2 from "../../assets/images/image2.jpg";
-import Image3 from "../../assets/images/image3.jpg";
-import { Sliders, ShoppingCart } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Headphones, ShoppingBag, Smartphone } from 'lucide-react';
+import Image2 from "../../assets/images/iphone16(1).png"
+import Image1 from "../../assets/images/earbuds(1).png"
+import Image3 from "../../assets/images/earbuds(2).png"
+import Background from "../../assets/images/background.jpg"
+
 
 const ImageList = [
   {
     id: 1,
-    img: Image3,
-    title: 'Up to 50% off on all Power Glasses',
-    description: 'Upgrade your vision with our premium selection of power glasses. Limited time offer!'
+    img: Background, // Replace with your actual image path
+    productImg: Image1, // Replace with your actual product image
+    title: 'Experience Wireless Freedom',
+    description: 'Immerse yourself in premium sound with our latest collection of wireless earbuds.',
+    highlight: 'New Release',
+    color: 'from-purple-600 to-blue-600'
   },
   {
     id: 2,
-    img: Image2,
-    title: 'Stylish Frames for Every Face',
-    description: 'Discover the perfect pair that complements your unique style and personality.'
+    img: Background, // Replace with your actual image path
+    productImg: Image2, // Replace with your actual product image
+    title: 'Premium Smartphones',
+    description: 'Discover the next generation of mobile technology with cutting-edge features.',
+    highlight: 'Best Seller',
+    color: 'from-blue-600 to-cyan-600'
   },
   {
     id: 3,
-    img: Image1,
-    title: 'Advanced Lens Technology',
-    description: 'Experience crystal-clear vision with our cutting-edge lens innovations.'
+    img: Background, // Replace with your actual image path
+    productImg: Image3, // Replace with your actual product image
+    title: 'Ultimate Sound Quality',
+    description: 'Active noise cancellation and crystal-clear audio for an unmatched listening experience.',
+    highlight: 'Featured',
+    color: 'from-violet-600 to-purple-600'
   }
 ];
 
@@ -42,77 +49,115 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative overflow-hidden min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 flex justify-center items-center transition-colors duration-500">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] bg-orange-200 dark:bg-orange-900 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-3xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] bg-lime-200 dark:bg-lime-900 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+    <div className="relative min-h-screen bg-black overflow-hidden">
+      {/* Background Image Carousel */}
+      <div className="absolute inset-0">
+        {ImageList.map((item, index) => (
+          <div
+            key={item.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentSlide ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <img
+              src={item.img}
+              alt={item.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/50 to-black/80" />
+          </div>
+        ))}
       </div>
 
-      {/* Content Container */}
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className={`absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r ${ImageList[currentSlide].color} rounded-full mix-blend-overlay filter blur-3xl animate-pulse opacity-30`} />
+        <div className={`absolute -bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r ${ImageList[currentSlide].color} rounded-full mix-blend-overlay filter blur-3xl animate-pulse delay-700 opacity-30`} />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 container mx-auto px-4 pt-20 pb-12">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
           {/* Text Content */}
-          <motion.div 
-            className="flex-1 text-center lg:text-left"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-800 dark:text-white mb-6 leading-tight">
+          <div className="flex-1 text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
+            {/* Highlight Tag */}
+            <div className={`inline-block px-4 py-1 rounded-full bg-gradient-to-r ${ImageList[currentSlide].color} text-white text-sm font-medium mb-6`}>
+              {ImageList[currentSlide].highlight}
+            </div>
+
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
               {ImageList[currentSlide].title}
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            
+            <p className="text-lg text-gray-300 mb-8 max-w-xl">
               {ImageList[currentSlide].description}
             </p>
+
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="px-8 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center">
-                <ShoppingCart className="w-5 h-5 mr-2" />
+              <button className={`group px-8 py-4 bg-gradient-to-r ${ImageList[currentSlide].color} rounded-full font-medium text-white hover:shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-300 flex items-center justify-center`}>
+                <ShoppingBag className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
                 Shop Now
               </button>
-              <button className="px-8 py-3 bg-white text-gray-800 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center">
-                <Sliders className="w-5 h-5 mr-2" />
-                Customize
+              <button className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-full font-medium hover:bg-white/20 transform hover:scale-105 transition-all duration-300 flex items-center justify-center">
+                Learn More
               </button>
             </div>
-          </motion.div>
 
-          {/* Image Carousel */}
-          <motion.div 
-            className="flex-1 relative"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="relative w-full" style={{ paddingBottom: '75%' }}> {/* 4:3 aspect ratio */}
+            {/* Feature Icons */}
+            <div className="mt-12 flex items-center justify-center lg:justify-start space-x-8">
+              <div className="flex items-center space-x-2">
+                <Headphones className="w-6 h-6 text-purple-500" />
+                <span className="text-gray-400 text-sm">Premium Audio</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Smartphone className="w-6 h-6 text-blue-500" />
+                <span className="text-gray-400 text-sm">Latest Tech</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Product Showcase */}
+          <div className="flex-1 relative">
+            <div className="relative w-full" style={{ paddingBottom: '100%' }}>
               {ImageList.map((item, index) => (
-                <motion.div
+                <div
                   key={item.id}
-                  className="absolute top-0 left-0 w-full h-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: index === currentSlide ? 1 : 0 }}
-                  transition={{ duration: 0.5 }}
+                  className={`absolute inset-0 transition-all duration-700 transform ${
+                    index === currentSlide 
+                      ? 'opacity-100 scale-100' 
+                      : 'opacity-0 scale-95'
+                  }`}
                 >
-                  <img
-                    src={item.img}
-                    alt={item.title}
-                    className="w-full h-full object-contain"
-                  />
-                </motion.div>
+                  <div className="relative w-full h-full">
+                    {/* Product Image */}
+                    <img
+                      src={item.productImg}
+                      alt={item.title}
+                      className="w-full h-full object-contain transform hover:scale-105 transition-transform duration-500"
+                    />
+                    {/* Decorative Ring */}
+                    <div className={`absolute inset-0 border-2 border-gradient-to-r ${item.color} rounded-full opacity-20 animate-spin-slow`} />
+                  </div>
+                </div>
               ))}
             </div>
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+
+            {/* Slide Indicators */}
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
               {ImageList.map((_, index) => (
                 <button
                   key={index}
-                  className={`w-3 h-3 rounded-full ${
-                    index === currentSlide ? 'bg-orange-500' : 'bg-gray-300'
-                  }`}
                   onClick={() => setCurrentSlide(index)}
+                  className={`w-12 h-1.5 rounded-full transition-all duration-300 ${
+                    index === currentSlide 
+                      ? `bg-gradient-to-r ${ImageList[currentSlide].color} w-20` 
+                      : 'bg-gray-600'
+                  }`}
                 />
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

@@ -101,8 +101,8 @@ const AddProduct = () => {
               onChange={(e) => setProductCategory(e.target.value)}
             >
               <option value="" disabled>Select Category</option>
-              <option value="Sun Glasses">Sun Glasses</option>
-              <option value="Power Glasses">Power Glasses</option>
+              <option value="Ear Buds">Ear Buds</option>
+              <option value="Mobile Phones">Mobile Phones</option>
             </select>
           </motion.div>
         </div>

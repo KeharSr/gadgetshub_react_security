@@ -51,9 +51,7 @@ const ViewOrder = () => {
     );
   }
 
-  // const formatAddress = (address) => {
-  //     return `${address.firstName}, ${address.street}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country}`;
-  // };
+  
 
   const formatAddress = (order) => {
     return `${order.name}, ${order.street}, ${order.city}, ${order.state} ${order.zipCode}, ${order.country},${order.phone}`;
@@ -163,7 +161,7 @@ const ViewOrder = () => {
                             className="flex items-center space-x-4 bg-white p-3 rounded-lg shadow-sm"
                           >
                             <img
-                              src={`http://localhost:5000/products/${product.productId.productImage}`}
+                              src={`https://localhost:5000/products/${product.productId.productImage}`}
                               alt={product.productId.productName}
                               className="w-16 h-16 object-cover rounded-md"
                             />

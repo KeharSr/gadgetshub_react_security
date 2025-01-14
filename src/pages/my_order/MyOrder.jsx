@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Package, ChevronDown, ChevronUp } from "lucide-react";
+import { Package, ChevronDown, ChevronUp, Truck, Clock, Check, MapPin, Headphones, Smartphone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
@@ -59,66 +59,97 @@ const MyOrders = () => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
+  const getStatusIcon = (status) => {
+    switch (status.toLowerCase()) {
+      case 'processing':
+        return <Clock className="w-5 h-5 text-yellow-400" />;
+      case 'shipped':
+        return <Truck className="w-5 h-5 text-blue-400" />;
+      case 'delivered':
+        return <Check className="w-5 h-5 text-green-400" />;
+      default:
+        return <Package className="w-5 h-5 text-purple-400" />;
+    }
+  };
+
+  const getProductIcon = (productName) => {
+    if (productName.toLowerCase().includes('earbud')) {
+      return <Headphones className="w-4 h-4 text-blue-400" />;
+    }
+    return <Smartphone className="w-4 h-4 text-purple-400" />;
+  };
+
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-100">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <motion.div
-          className="text-2xl font-bold text-blue-600"
+          className="text-2xl font-bold text-blue-400 flex items-center space-x-3"
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1, repeat: Infinity }}
         >
-          Loading orders...
+          <Package className="w-8 h-8" />
+          <span>Loading your tech orders...</span>
         </motion.div>
       </div>
     );
 
   if (error)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-100">
-        <div className="text-2xl font-bold text-red-500">Error: {error}</div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="text-2xl font-bold text-red-400">Error: {error}</div>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-purple-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <motion.h1
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-4xl font-extrabold mb-12 text-blue-600 text-center"
+          className="text-4xl font-bold mb-12 text-white text-center"
         >
-          My Delightful Orders
+          Your Tech Orders
         </motion.h1>
-        <div className="space-y-8">
+        <div className="space-y-6">
           {orders.map((order) => (
             <motion.div
               key={order._id}
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden border border-blue-200"
+              className="backdrop-blur-xl bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700"
             >
               <div
-                className="p-6 cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors duration-300"
+                className="p-6 cursor-pointer hover:bg-gray-700/30 transition-colors duration-300"
                 onClick={() => toggleOrderExpansion(order._id)}
               >
                 <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <Package className="text-blue-500 mr-3" size={28} />
-                    <span className="text-2xl font-semibold text-gray-800">
-                      Order #{order._id.slice(-6)}
-                    </span>
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 bg-gray-700/50 rounded-xl">
+                      <Package className="text-blue-400" size={24} />
+                    </div>
+                    <div>
+                      <span className="text-xl font-semibold text-white">
+                        Order #{order._id.slice(-6)}
+                      </span>
+                      <p className="text-sm text-gray-400">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-lg font-medium text-blue-500 mr-4">
-                      {order.status}
-                    </span>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 px-4 py-2 bg-gray-700/30 rounded-full">
+                      {getStatusIcon(order.status)}
+                      <span className="text-sm font-medium text-gray-300">
+                        {order.status}
+                      </span>
+                    </div>
                     {expandedOrder === order._id ? (
-                      <ChevronUp size={24} />
+                      <ChevronUp className="text-gray-400" size={20} />
                     ) : (
-                      <ChevronDown size={24} />
+                      <ChevronDown className="text-gray-400" size={20} />
                     )}
                   </div>
                 </div>
@@ -130,40 +161,45 @@ const MyOrders = () => {
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="px-6 pb-6 bg-white"
+                    className="px-6 pb-6"
                   >
-                    <div className="mb-4">
+                    <div className="space-y-4 mb-6">
                       {order.carts.map((product) => (
                         <div
                           key={product.productId._id}
-                          className="flex items-center mb-4 p-3 bg-blue-50 rounded-lg"
+                          className="flex items-center p-4 bg-gray-700/30 rounded-xl backdrop-blur-sm"
                         >
-                          <img
-                            src={`http://localhost:5000/products/${product.productId.productImage}`}
-                            alt={product.productId.productName || 'Product Image'}
-                            className="w-20 h-20 object-cover rounded-md mr-4 border border-blue-200"
-                          />
-                          <div>
-                            <div className="text-lg font-semibold text-gray-800">
-                              {product.productId.productName}
+                          <div className="relative group">
+                            <img
+                              src={`http://localhost:5000/products/${product.productId.productImage}`}
+                              alt={product.productId.productName}
+                              className="w-24 h-24 object-cover rounded-lg border border-gray-600 transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute top-2 left-2">
+                              {getProductIcon(product.productId.productName)}
                             </div>
-                            <div className="text-md text-gray-600">
-                              Quantity: {product.quantity}
-                            </div>
-                            <div className="text-md font-medium text-blue-600">
-                              $
-                              {(
-                                product.productId.productPrice *
-                                product.quantity
-                              ).toFixed(2)}
+                          </div>
+                          <div className="ml-6 flex-1">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <div className="text-lg font-semibold text-white">
+                                  {product.productId.productName}
+                                </div>
+                                <div className="text-sm text-gray-400 mt-1">
+                                  Quantity: {product.quantity}
+                                </div>
+                              </div>
+                              <div className="text-lg font-medium text-blue-400">
+                                ₹{(product.productId.productPrice * product.quantity).toFixed(2)}
+                              </div>
                             </div>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="flex justify-between items-center border-t border-blue-200 pt-4">
-                      <span className="text-xl font-bold text-gray-800">
-                        Total: $
+                    <div className="flex justify-between items-center border-t border-gray-700 pt-4">
+                      <span className="text-xl font-bold text-white">
+                        Total: ₹
                         {order.carts
                           .reduce(
                             (total, product) =>
@@ -179,7 +215,7 @@ const MyOrders = () => {
                           e.stopPropagation();
                           handleTrackOrder(order._id);
                         }}
-                        className="bg-blue-500 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                       >
                         Track Order
                       </button>

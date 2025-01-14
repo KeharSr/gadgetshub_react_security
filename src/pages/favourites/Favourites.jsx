@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, ArrowRight, Heart, Loader } from 'lucide-react';
+import { Star, ArrowRight, Heart, Loader, Headphones, Smartphone, Battery, Wifi } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Navbar from '../../components/navbar/Navbar';
 import Footer from '../../components/footer/Footer';
@@ -69,28 +69,31 @@ const Favorites = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-r from-purple-50 to-pink-50">
-        <Loader className="w-12 h-12 text-purple-600 animate-spin" />
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="relative">
+          <Loader className="w-12 h-12 text-blue-500 animate-spin" />
+          <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Navbar />
       
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Your Favorite Sunglasses
+          <h1 className="text-4xl font-bold text-white mb-4">
+            Your Tech Wishlist
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Here's a collection of your most loved eyewear picks.
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            Your curated collection of premium earbuds and smartphones.
           </p>
         </motion.div>
 
@@ -99,14 +102,17 @@ const Favorites = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="text-center py-12 bg-white rounded-lg shadow-lg"
+            className="text-center py-12 bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 shadow-xl"
           >
-            <Heart className="w-16 h-16 text-pink-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-700">Your favorites list is empty</h2>
-            <p className="mt-2 text-gray-600">Start adding some amazing sunglasses to your favorites!</p>
-            <Link to="/homepage" className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-              Explore Products
-              <ArrowRight className="ml-2 -mr-1 h-5 w-5" aria-hidden="true" />
+            <div className="flex justify-center space-x-4 mb-6">
+              <Headphones className="w-8 h-8 text-blue-400" />
+              <Smartphone className="w-8 h-8 text-purple-400" />
+            </div>
+            <h2 className="text-2xl font-semibold text-white">Your wishlist is waiting to be filled</h2>
+            <p className="mt-2 text-gray-400">Discover our premium collection of earbuds and smartphones</p>
+            <Link to="/homepage" className="mt-6 inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+              Explore Tech
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </motion.div>
         ) : (
@@ -124,42 +130,52 @@ const Favorites = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1"
+                  className="group bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300"
                 >
-                  <div className="relative">
+                  <div className="relative overflow-hidden">
                     <img
                       src={`http://localhost:5000/products/${favorite.product.productImage}`}
-                      className="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
+                      className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                       alt={favorite.product.productName}
                     />
-                    <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-600 text-white">
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-400 backdrop-blur-sm border border-blue-500/20">
                         {favorite.product.productCategory}
                       </span>
                     </div>
                   </div>
                   <div className="p-6">
-                    <h5 className="text-xl font-bold mb-2 text-gray-900">{favorite.product.productName}</h5>
+                    <h5 className="text-xl font-bold mb-2 text-white group-hover:text-blue-400 transition-colors duration-300">
+                      {favorite.product.productName}
+                    </h5>
                     <div className="flex justify-between items-center mb-4">
-                      <span className="text-sm text-gray-600">{favorite.product.productCategory}</span>
-                      <span className="text-lg font-bold text-purple-600">${favorite.product.productPrice.toFixed(2)}</span>
+                      <div className="flex items-center space-x-2">
+                        {favorite.product.productCategory.toLowerCase().includes('earbud') ? (
+                          <Headphones className="w-4 h-4 text-gray-400" />
+                        ) : (
+                          <Smartphone className="w-4 h-4 text-gray-400" />
+                        )}
+                        <span className="text-sm text-gray-400">{favorite.product.productCategory}</span>
+                      </div>
+                      <span className="text-lg font-bold text-blue-400">₹{favorite.product.productPrice.toFixed(2)}</span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-6 line-clamp-2">{favorite.product.productDescription}</p>
-                    <div className="flex items-center mb-4">
-                      <Star className="h-5 w-5 text-yellow-400 mr-1" fill="currentColor" />
-                      <span className="text-sm font-semibold text-gray-800">
+                    <p className="text-sm text-gray-400 mb-6 line-clamp-2">{favorite.product.productDescription}</p>
+                    <div className="flex items-center mb-6 bg-gray-700/30 rounded-full px-3 py-1 w-fit">
+                      <Star className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" />
+                      <span className="text-sm font-semibold text-gray-300">
                         {productsRatings[favorite.product._id] ? productsRatings[favorite.product._id].toFixed(1) : 'N/A'}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <Link to={`/product/${favorite.product._id}`} className="w-full">
-                        <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold text-sm uppercase tracking-wider hover:bg-purple-700 transition-colors duration-200">
-                          View More
+                        <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold text-sm uppercase tracking-wider transition-all duration-300">
+                          View Details
                         </button>
                       </Link>
                       <button
                         onClick={() => removeFromFavorites(favorite._id, favorite.product._id)}
-                        className="w-full px-4 py-2 border border-red-600 text-red-600 rounded-lg font-semibold text-sm uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-200"
+                        className="w-full px-4 py-2 border border-red-500/50 bg-red-500/10 text-red-400 rounded-xl font-semibold text-sm uppercase tracking-wider hover:bg-red-500/20 transition-all duration-300"
                       >
                         Remove
                       </button>
@@ -170,14 +186,6 @@ const Favorites = () => {
             </motion.div>
           </AnimatePresence>
         )}
-
-        <motion.div 
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.3 }}
-        >
-        </motion.div>
       </main>
 
       <Footer />
@@ -186,4 +194,3 @@ const Favorites = () => {
 };
 
 export default Favorites;
-

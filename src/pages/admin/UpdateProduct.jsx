@@ -93,8 +93,8 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
               className="w-full px-3 py-2 border rounded"
               required
             >
-              <option value="sunglasses">SunGlasses</option>
-              <option value="powerglasses">PowerGlasses</option>
+              <option value="earbuds">Ear Buds</option>
+              <option value="smartphones">Smart Phones</option>
             </select>
           </div>
         </div>
@@ -134,7 +134,7 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
           <div className="flex justify-center items-center mb-2">
             {oldImage ? (
               <img
-                src={`http://localhost:5000/products/${oldImage}`}
+                src={`https://localhost:5000/products/${oldImage}`}
                 alt="Current Product"
                 className="h-40 w-40 object-cover rounded"
               />

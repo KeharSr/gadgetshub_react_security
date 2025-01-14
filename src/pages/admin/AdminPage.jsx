@@ -28,7 +28,7 @@ const AdminPage = () => {
         if (res.status === 200) {
           setUser(res.data.user);
           setProfilePicture(
-            `http://localhost:5000/profile_pictures/${res.data.user.profilePicture}`
+            `https://localhost:5000/profile_pictures/${res.data.user.profilePicture}`
           );
         }
       })

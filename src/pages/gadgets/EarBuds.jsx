@@ -4,7 +4,7 @@ import Products from '../Products/Products';
 import toast from 'react-hot-toast';
 import Navbar from '../../components/navbar/Navbar';
 import { motion } from 'framer-motion';
-import { Sun, Loader, ChevronLeft, ChevronRight,Star } from 'lucide-react';
+import { Headphones, Loader, ChevronLeft, ChevronRight, Star, Battery, Wifi, Bluetooth } from 'lucide-react';
 
 const EarBuds = () => {
   const [products, setProducts] = useState([]);
@@ -12,7 +12,7 @@ const EarBuds = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [productsRatings, setProductsRatings] = useState({});
-  const limit = 4; // Set to match the default limit in your API
+  const limit = 8;
 
   useEffect(() => {
     fetchProducts();
@@ -21,7 +21,7 @@ const EarBuds = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await getProductsByCategoryApi('Sun Glasses', page, limit);
+      const res = await getProductsByCategoryApi('Ear Buds', page, limit);
       if (res.status === 201) {
         setProducts(res.data.products);
         setTotalPages(Math.ceil(res.data.totalCount / limit));
@@ -38,27 +38,25 @@ const EarBuds = () => {
   };
 
   useEffect(() => {
-    for (let i = 0; i < products.length; i++) {
-      getAverageRatingApi(products[i]._id)
-        .then((res) => {
+    const fetchRatings = async () => {
+      const ratings = {};
+      for (const product of products) {
+        try {
+          const res = await getAverageRatingApi(product._id);
           if (res.status === 200) {
-            const ratings=res.data.averageRating
-            const id=res.data.productId
-
-            // cretae a map between product id and rating
-            setProductsRatings((prev) => {
-              return {...prev, [id]:ratings}
-
-            });
+            ratings[product._id] = res.data.averageRating;
           }
-        })
-        .catch((err) => {
+        } catch (err) {
           console.log(err);
-        });
+        }
+      }
+      setProductsRatings(ratings);
+    };
+    
+    if (products.length > 0) {
+      fetchRatings();
     }
-      
-  }, 
-  [products]);
+  }, [products]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -80,87 +78,110 @@ const EarBuds = () => {
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <Loader className="w-12 h-12 text-indigo-600 animate-spin" />
-        <p className="mt-4 text-xl font-semibold text-gray-700">Loading amazing sunglasses...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="relative">
+          <Loader className="w-12 h-12 text-blue-500 animate-spin" />
+          <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
+        </div>
+        <p className="mt-4 text-xl font-semibold text-gray-300">Loading premium audio gear...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Navbar />
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            Discover Your Perfect Sunglasses
+          <div className="flex justify-center space-x-6 mb-8">
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              className="flex flex-col items-center p-4 bg-gray-800/50 rounded-xl backdrop-blur-sm"
+            >
+              <Battery className="w-8 h-8 text-blue-400 mb-2" />
+              <span className="text-sm text-gray-400">40Hr Battery</span>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              className="flex flex-col items-center p-4 bg-gray-800/50 rounded-xl backdrop-blur-sm"
+            >
+              <Bluetooth className="w-8 h-8 text-purple-400 mb-2" />
+              <span className="text-sm text-gray-400">Bluetooth 5.2</span>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              className="flex flex-col items-center p-4 bg-gray-800/50 rounded-xl backdrop-blur-sm"
+            >
+              <Wifi className="w-8 h-8 text-green-400 mb-2" />
+              <span className="text-sm text-gray-400">Low Latency</span>
+            </motion.div>
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Premium Wireless Earbuds
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Protect your eyes in style with our curated collection of premium sunglasses.
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            Experience crystal-clear sound with our collection of premium wireless earbuds. 
+            Featuring advanced noise cancellation and seamless connectivity.
           </p>
         </motion.div>
 
         {products.length === 0 ? (
-          <div className="text-center py-12">
-            <Sun className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-700">No sunglasses available on this page</h2>
-            <p className="mt-2 text-gray-600">Try going back to the previous page or check again later!</p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-12 bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700"
+          >
+            <Headphones className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-semibold text-white">No products available</h2>
+            <p className="mt-2 text-gray-400">Check back soon for new arrivals!</p>
+          </motion.div>
         ) : (
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
           >
-            {products.map((singleProduct) => (
+            {products.map((product) => (
               <motion.div
-                key={singleProduct._id}
+                key={product._id}
                 variants={itemVariants}
-                className="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl"
+                whileHover={{ y: -5 }}
+                className="transform transition-all duration-300"
               >
-                <Products productInformation={singleProduct} color={'indigo'} />
-                <div className="p-4 bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Average Rating:</span>
-                    <div className="flex items-center">
-                      <Star className="h-5 w-5 text-yellow-400 mr-1" fill="currentColor" />
-                      <span className="text-sm font-semibold text-gray-800">
-                        {productsRatings[singleProduct._id] ? productsRatings[singleProduct._id].toFixed(1) : 'N/A'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <Products productInformation={product} color={'blue'} />
               </motion.div>
             ))}
           </motion.div>
         )}
 
         {/* Pagination */}
-        <div className="flex justify-center items-center space-x-2 mt-8">
+        <div className="flex justify-center items-center space-x-4 mt-12">
           <button
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}
-            className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-xl bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-gray-700 transition-all duration-300"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <span className="text-gray-700">
+          <span className="text-gray-300 bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-700">
             Page {page} of {totalPages}
           </span>
           <button
             onClick={() => handlePageChange(page + 1)}
             disabled={page >= totalPages}
-            className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-xl bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-gray-700 transition-all duration-300"
           >
             <ChevronRight className="h-5 w-5" />
           </button>

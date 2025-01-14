@@ -2,15 +2,16 @@ import React, { useState, useEffect } from "react";
 import applogo from "../../assets/images/applogo.png";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShoppingCart, User, Menu, X } from "lucide-react";
+import { ShoppingCart, User, Menu, X, Headphones, Smartphone, Package, Heart, LogOut, Settings } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { getCurrentUserApi } from "../../apis/Api";
-import Footer from "../footer/Footer";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user")) || null
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,10 +22,7 @@ const Navbar = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
 
   useEffect(() => {
@@ -53,75 +51,102 @@ const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 120, damping: 20 }}
       className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-md" : "bg-transparent"
+        scrolled 
+          ? "bg-gray-900/95 backdrop-blur-lg border-b border-gray-800 shadow-lg" 
+          : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <img
-                className="h-10 w-auto mr-2"
-                src={applogo}
-                alt="Lensify Logo"
-              />
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
-                Lensify
+        <div className="flex justify-between items-center h-20">
+          <Link to="/" className="flex items-center justify-start">
+            <img 
+              className="h-12 w-auto" 
+              src={applogo} 
+              alt="TechStore Logo" 
+            />
+          </Link>
+
+          <div className="hidden md:flex items-center space-x-1">
+            <NavLink to="/homepage">
+              <span className="flex items-center space-x-1">
+                Home
               </span>
-            </Link>
-          </div>
-          <div className="hidden md:flex items-center space-x-4">
-            <NavLink to="/homepage">Home</NavLink>
-            <NavLink to="/sunglasses">Sun Glasses</NavLink>
-            <NavLink to="/powerglasses">Power Glasses</NavLink>
-            <NavLink to="/myorder">My Orders</NavLink>
-            <NavLink to="/favourites">Favourites</NavLink>
-            
+            </NavLink>
+            <NavLink to="/Earbuds">
+              <span className="flex items-center space-x-1">
+                <Headphones className="w-4 h-4" />
+                <span>Earbuds</span>
+              </span>
+            </NavLink>
+            <NavLink to="/Mobilephones">
+              <span className="flex items-center space-x-1">
+                <Smartphone className="w-4 h-4" />
+                <span>Phones</span>
+              </span>
+            </NavLink>
+            <NavLink to="/myorder">
+              <span className="flex items-center space-x-1">
+                <Package className="w-4 h-4" />
+                <span>Orders</span>
+              </span>
+            </NavLink>
+            <NavLink to="/favourites">
+              <span className="flex items-center space-x-1">
+                <Heart className="w-4 h-4" />
+                <span>Wishlist</span>
+              </span>
+            </NavLink>
+
             <Link
               to="/addtocart"
-              className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              className="relative p-2 text-gray-400 hover:text-blue-400 transition-colors duration-200"
             >
               <ShoppingCart className="w-6 h-6" />
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
             </Link>
 
             <div className="relative">
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center focus:outline-none"
+                className="flex items-center space-x-2 p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors duration-200"
               >
-                <User className="w-8 h-8 text-gray-600" />
-                <span className="text-gray-800 font-medium">
+                <User className="w-5 h-5 text-gray-400" />
+                <span className="text-gray-300 text-sm font-medium">
                   {user ? user.firstName : "Guest"}
                 </span>
               </button>
+
               {isOpen && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.1 }}
-                  className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5"
+                  className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-xl py-1 border border-gray-700"
                 >
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50"
+                    className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700/50"
                   >
-                    Edit Profile
+                    <Settings className="w-4 h-4" />
+                    <span>Edit Profile</span>
                   </Link>
                   <Link
                     to="/signout"
                     onClick={handleLogout}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700/50"
                   >
-                    Sign out
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign out</span>
                   </Link>
                 </motion.div>
               )}
             </div>
           </div>
+
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              className="p-2 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-gray-800 focus:outline-none"
             >
               {isOpen ? (
                 <X className="h-6 w-6" />
@@ -138,26 +163,30 @@ const Navbar = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="md:hidden bg-white shadow-lg"
+          className="md:hidden bg-gray-900/95 backdrop-blur-lg border-b border-gray-800"
         >
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <div className="px-2 pt-2 pb-3 space-y-1">
             <NavLink to="/homepage" mobile>
               Home
             </NavLink>
-            <NavLink to="/sunglasses" mobile>
-              Sun Glasses
+            <NavLink to="/Earbuds" mobile>
+              <Headphones className="w-4 h-4 mr-2" />
+              Earbuds
             </NavLink>
-            <NavLink to="/powerglasses" mobile>
-              Power Glasses
+            <NavLink to="/Mobilephones" mobile>
+              <Smartphone className="w-4 h-4 mr-2" />
+              Phones
             </NavLink>
             <NavLink to="/myorder" mobile>
-              My Orders
+              <Package className="w-4 h-4 mr-2" />
+              Orders
             </NavLink>
             <NavLink to="/favourites" mobile>
-              Favourites
+              <Heart className="w-4 h-4 mr-2" />
+              Wishlist
             </NavLink>
             <NavLink to="/addtocart" mobile>
-              <ShoppingCart className="w-5 h-5 mr-2" />
+              <ShoppingCart className="w-4 h-4 mr-2" />
               Cart
             </NavLink>
           </div>
@@ -172,13 +201,16 @@ const NavLink = ({ to, children, mobile }) => (
     to={to}
     className={`${
       mobile
-        ? "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-        : "text-gray-600 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 relative group"
+        ? "flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800/50"
+        : "relative px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200 group"
     }`}
   >
     {children}
     {!mobile && (
-      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-600 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200"></span>
+      <motion.span 
+        className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        layoutId="navunderline"
+      />
     )}
   </Link>
 );

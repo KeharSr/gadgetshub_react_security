@@ -204,7 +204,7 @@ const PlaceOrder = () => {
                     className="bg-white rounded-lg shadow-md p-4 flex items-center"
                   >
                     <img
-                      src={`http://localhost:5000/products/${product.productId.productImage}`}
+                      src={`https://localhost:5000/products/${product.productId.productImage}`}
                       alt={product.productId.productName}
                       className="w-16 h-16 object-cover rounded-md mr-4"
                     />

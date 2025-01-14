@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/navbar/Navbar";
+import { motion } from "framer-motion";
 import {
   getCurrentUserApi,
   uploadProfilePictureApi,
   editUserProfileApi,
 } from "../../apis/Api";
 import { toast } from "react-hot-toast";
+import { Camera, User, Mail, Phone, AtSign, Upload, Save } from "lucide-react";
 
 const EditProfile = () => {
   const [profile, setProfile] = useState({
@@ -16,6 +18,8 @@ const EditProfile = () => {
     username: "",
     profilePicture: null,
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getCurrentUserApi()
@@ -28,7 +32,7 @@ const EditProfile = () => {
             email: userData.email,
             phoneNumber: userData.phoneNumber,
             username: userData.userName,
-            profilePicture: userData.profilePicture, 
+            profilePicture: userData.profilePicture,
           });
         }
       })
@@ -46,158 +50,182 @@ const EditProfile = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setIsLoading(true);
       const formData = new FormData();
       formData.append("profilePicture", file);
 
       uploadProfilePictureApi(formData)
         .then((res) => {
           if (res.status === 200) {
-            toast.success(res.data.message); 
-            setProfile({ ...profile, profilePicture: res.data.profilePicture }); 
+            toast.success(res.data.message);
+            setProfile({ ...profile, profilePicture: res.data.profilePicture });
           } else {
-            toast.error(res.data.message); 
+            toast.error(res.data.message);
           }
         })
         .catch((err) => {
           console.log(err);
           toast.error("Failed to upload profile picture");
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    
     const updatedProfile = {
       firstName: profile.firstName,
       lastName: profile.lastName,
       email: profile.email,
       phoneNumber: profile.phoneNumber,
       userName: profile.username,
-      profilePicture: profile.profilePicture, 
+      profilePicture: profile.profilePicture,
     };
 
-    editUserProfileApi(updatedProfile)
-      .then((res) => {
-        if (res.status === 200) {
-          toast.success(res.data.message); 
-        } else {
-          toast.error(res.data.message); 
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Failed to update profile");
-      });
+    try {
+      const res = await editUserProfileApi(updatedProfile);
+      if (res.status === 200) {
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to update profile");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  return (
-    <>
-      <Navbar />
-      <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-        <div className="relative py-3 sm:max-w-3xl sm:mx-auto w-full px-4">
-          <div className="relative px-4 py-10 bg-white shadow rounded-lg sm:p-10">
-            <form
-              className="max-w-md mx-auto space-y-6"
-              onSubmit={handleSubmit}
-            >
-              <h2 className="text-2xl font-semibold text-gray-900 mb-8">
-                Edit Profile
-              </h2>
+  const InputField = ({ icon: Icon, label, name, type = "text", value, onChange }) => (
+    <div className="relative">
+      <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Icon className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="block w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+          placeholder={label}
+        />
+      </div>
+    </div>
+  );
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Profile Image
-                </label>
-                <div className="mt-1 flex items-center space-x-4">
-                  <div className="flex-shrink-0">
-                    {profile.profilePicture ? (
-                      <img
-                        src={`http://localhost:5000/profile_pictures/${profile.profilePicture}`}
-                        alt="Profile"
-                        className="h-16 w-16 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center">
-                        <svg
-                          className="h-8 w-8 text-gray-500"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  <label
-                    htmlFor="file-upload"
-                    className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    <span>Change</span>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <Navbar />
+      <div className="container mx-auto px-4 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-2xl mx-auto"
+        >
+          <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700 p-8">
+            <h2 className="text-3xl font-bold text-white mb-8 flex items-center">
+              <User className="w-8 h-8 mr-3 text-blue-400" />
+              Edit Profile
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Profile Picture Section */}
+              <div className="flex flex-col items-center space-y-4 mb-8">
+                <div className="relative group">
+                  {profile.profilePicture ? (
+                    <img
+                      src={`http://localhost:5000/profile_pictures/${profile.profilePicture}`}
+                      alt="Profile"
+                      className="w-32 h-32 rounded-full object-cover border-4 border-gray-700 group-hover:border-blue-500 transition-all duration-300"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center border-4 border-gray-600">
+                      <User className="w-16 h-16 text-gray-400" />
+                    </div>
+                  )}
+                  <label className="absolute bottom-0 right-0 p-2 bg-blue-500 rounded-full cursor-pointer hover:bg-blue-600 transition-colors duration-300">
+                    <Camera className="w-5 h-5 text-white" />
                     <input
-                      id="file-upload"
-                      name="file-upload"
                       type="file"
-                      className="sr-only"
+                      className="hidden"
                       onChange={handleImageChange}
                       accept="image/*"
                     />
                   </label>
                 </div>
+                <p className="text-sm text-gray-400">Click the camera icon to change your profile picture</p>
               </div>
 
-              <div>
-                <label
-                  htmlFor="username"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  value={profile.username}
+              <div className="grid grid-cols-2 gap-6">
+                <InputField
+                  icon={User}
+                  label="First Name"
+                  name="firstName"
+                  value={profile.firstName}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Username"
+                />
+                <InputField
+                  icon={User}
+                  label="Last Name"
+                  name="lastName"
+                  value={profile.lastName}
+                  onChange={handleChange}
                 />
               </div>
 
-              {["firstName", "lastName", "email", "phoneNumber"].map(
-                (field) => (
-                  <div key={field}>
-                    <label
-                      htmlFor={field}
-                      className="block text-sm font-medium text-gray-700 capitalize"
-                    >
-                      {field.replace(/([A-Z])/g, " $1").trim()}
-                    </label>
-                    <input
-                      type={field === "email" ? "email" : "text"}
-                      name={field}
-                      id={field}
-                      value={profile[field]}
-                      onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder={field.replace(/([A-Z])/g, " $1").trim()}
-                    />
-                  </div>
-                )
-              )}
+              <InputField
+                icon={AtSign}
+                label="Username"
+                name="username"
+                value={profile.username}
+                onChange={handleChange}
+              />
 
-              <div>
-                <button
-                  type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Update Profile
-                </button>
-              </div>
+              <InputField
+                icon={Mail}
+                label="Email"
+                name="email"
+                type="email"
+                value={profile.email}
+                onChange={handleChange}
+              />
+
+              <InputField
+                icon={Phone}
+                label="Phone Number"
+                name="phoneNumber"
+                value={profile.phoneNumber}
+                onChange={handleChange}
+              />
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center space-x-2"
+              >
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white" />
+                ) : (
+                  <>
+                    <Save className="w-5 h-5" />
+                    <span>Update Profile</span>
+                  </>
+                )}
+              </motion.button>
             </form>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </>
+    </div>
   );
 };
 

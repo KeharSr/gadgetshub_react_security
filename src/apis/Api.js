@@ -29,8 +29,33 @@ export const testApi = () => Api.get("/test");
 // Register Api
 export const registerUserApi = (data) => Api.post("/api/user/create", data);
 
-// Login Api
-export const loginUserApi = (data) => Api.post("/api/user/login", data);
+// Modified Login Api to handle OTP
+export const loginUserApi = (data) => {
+  // If OTP is included in data, it's the second step of login
+  if (data.otp) {
+      return Api.post("/api/user/login", data);
+  }
+  // First step of login (email + password)
+  return Api.post("/api/user/login", data);
+};
+
+// Add these new API endpoints to your existing API file:
+
+// Registration Email Verification OTP
+export const verifyRegistrationOTPApi = (data) => 
+  Api.post("/api/user/verify-email", data);
+
+// Resend Registration OTP
+export const resendRegistrationOTPApi = (data) => 
+  Api.post("/api/user/resend-registration-otp", data);
+
+// Verify Login OTP
+export const verifyLoginOTPApi = (data) => 
+  Api.post("/api/user/verify-login-otp", data);
+
+// Resend Login OTP
+export const resendLoginOTPApi = (data) => 
+  Api.post("/api/user/resend-login-otp", data);
 
 // get current user api
 export const getCurrentUserApi = () => Api.get("/api/user/current", config);
