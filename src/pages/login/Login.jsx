@@ -4,7 +4,6 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { Toaster, toast } from "react-hot-toast";
 import {
   loginUserApi,
-  verifyLoginOTPApi,
   resendLoginOTPApi,
 } from "../../apis/Api";
 import { Mail, Lock } from "lucide-react";
@@ -16,8 +15,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [googleToken, setGoogleToken] = useState("");
-  const [googleId, setGoogleId] = useState("");
   const [captchaToken, setCaptchaToken] = useState("");
   const [role, setRole] = useState("user");
 
@@ -249,9 +246,12 @@ const Login = () => {
                 </div>
 
                 <div className="flex justify-center">
-                  <ReCAPTCHA
+                  <ReCAPTCHA 
                     sitekey="6LezGbUqAAAAAEGlXzgckrxE5ooEa5YqlCDUOKlU" // Use your site key
-                    onChange={(token) => setCaptchaToken(token)} // Update token state
+                    onChange={(token) => {
+                      console.log("CAPTCHA Token:", token);
+                      setCaptchaToken(token);
+                    }}
                   />
                 </div>
 
