@@ -129,7 +129,7 @@ const Products = ({ productInformation }) => {
             {productInformation.productName}
           </h3>
           <span className="text-xl font-bold text-white">
-            ${productInformation.productPrice}
+            Rs {productInformation.productPrice}
           </span>
         </div>
 

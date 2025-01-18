@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { getCartApi, deleteCartItemApi, updateCartItemApi } from '../../apis/Api';
-import Navbar from '../../components/navbar/Navbar';
-import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ShoppingCart, Minus, Plus, ArrowRight, Trash2, Package } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { getCartApi, deleteCartItemApi, updateCartItemApi } from "../../apis/Api";
+import Navbar from "../../components/navbar/Navbar";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ShoppingCart, Minus, Plus, ArrowRight, Trash2, Package } from "lucide-react";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -19,18 +19,18 @@ const Cart = () => {
     try {
       const res = await getCartApi();
       if (res.status === 200 && res.data && res.data.products) {
-        // Filter out invalid items
         const cartItems = res.data.products
-          .filter(item => 
-            item && 
-            item.productId && 
-            item.productId.productName && 
-            item.productId.productPrice && 
-            item.productId.productQuantity
+          .filter(
+            (item) =>
+              item &&
+              item.productId &&
+              item.productId.productName &&
+              item.productId.productPrice &&
+              item.productId.productQuantity
           )
-          .map(item => ({
+          .map((item) => ({
             ...item,
-            quantity: item.quantity || 1
+            quantity: item.quantity || 1,
           }));
         setCart(cartItems);
         calculateSubtotal(cartItems);
@@ -43,6 +43,16 @@ const Cart = () => {
       setCart([]);
       setSubtotal(0);
     }
+  };
+
+  const calculateSubtotal = (items) => {
+    const total = items.reduce((acc, item) => {
+      if (!item?.productId?.productPrice || !item?.quantity) {
+        return acc;
+      }
+      return acc + item.productId.productPrice * item.quantity; // Use price * quantity
+    }, 0);
+    setSubtotal(total);
   };
 
   const handleQuantityChange = async (index, change) => {
@@ -64,9 +74,9 @@ const Cart = () => {
         productId: item.productId._id,
         quantity: newQuantity,
         size: item.size || null,
-        color: item.color || null
+        color: item.color || null,
       };
-      
+
       const res = await updateCartItemApi(data);
       if (res.status === 200) {
         setQuantityChanged(!quantityChanged);
@@ -76,16 +86,6 @@ const Cart = () => {
       console.error("Error updating quantity:", err);
       toast.error("Failed to update cart");
     }
-  };
-
-  const calculateSubtotal = (items) => {
-    const total = items.reduce((acc, item) => {
-      if (!item?.productId?.productPrice || !item?.quantity) {
-        return acc;
-      }
-      return acc + (item.productId.productPrice * item.quantity);
-    }, 0);
-    setSubtotal(total);
   };
 
   const handleDeleteItem = async (id) => {
@@ -101,29 +101,19 @@ const Cart = () => {
     }
   };
 
-  const getProductImage = (item) => {
-    if (!item?.productId?.productImage) {
-      return '';
-    }
-    
-    if (Array.isArray(item.productId.productImage)) {
-      return item.productId.productImage[0] || '';
-    }
-    return item.productId.productImage;
-  };
-
-  const validCart = cart.filter(item => 
-    item && 
-    item.productId && 
-    item.productId.productName && 
-    item.productId.productPrice
+  const validCart = cart.filter(
+    (item) =>
+      item &&
+      item.productId &&
+      item.productId.productName &&
+      item.productId.productPrice
   );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Navbar />
       <div className="container mx-auto p-5 pt-24">
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -131,9 +121,9 @@ const Cart = () => {
         >
           Your Tech Cart
         </motion.h1>
-        
-        {validCart.length === 0 ? (
-          <motion.div 
+
+        {cart.length === 0 ? (
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -141,20 +131,23 @@ const Cart = () => {
           >
             <Package size={64} className="mx-auto text-gray-400 mb-4" />
             <p className="text-gray-300 text-xl mb-4">Your cart is empty</p>
-            <Link to="/" className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-300">
+            <Link
+              to="/"
+              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+            >
               <ShoppingCart className="mr-2" />
               Start Shopping
             </Link>
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="backdrop-blur-lg bg-gray-800/50 rounded-2xl p-6 shadow-2xl border border-gray-700"
           >
-            {validCart.map((item, index) => (
-              <motion.div 
+            {cart.map((item, index) => (
+              <motion.div
                 key={item._id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -168,24 +161,26 @@ const Cart = () => {
                       alt={item.productId.productName}
                       className="w-40 h-40 object-cover rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   <div className="mt-4 md:mt-0 text-center md:text-left">
-                    <h5 className="text-xl font-bold text-white mb-2">{item.productId.productName}</h5>
-                    <p className="text-gray-400 mb-2">Rs. {item.productId.productPrice.toFixed(2)}</p>
-                    <p className="text-gray-500 text-sm max-w-md">{item.productId.productDescription}</p>
+                    <h5 className="text-xl font-bold text-white mb-2">
+                      {item.productId.productName}
+                    </h5>
+                    <p className="text-gray-400 mb-2">Rs. {item.productId.productPrice}</p>
                   </div>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
                   <div className="flex items-center space-x-3 bg-gray-700/50 rounded-full p-1">
-                    <button 
+                    <button
                       onClick={() => handleQuantityChange(index, -1)}
                       className="p-2 rounded-full bg-gray-600 text-gray-200 hover:bg-gray-500 transition-colors duration-300"
                     >
                       <Minus size={16} />
                     </button>
-                    <span className="text-lg font-semibold text-white w-8 text-center">{item.quantity}</span>
-                    <button 
+                    <span className="text-lg font-semibold text-white w-8 text-center">
+                      {item.quantity}
+                    </span>
+                    <button
                       onClick={() => handleQuantityChange(index, 1)}
                       className="p-2 rounded-full bg-gray-600 text-gray-200 hover:bg-gray-500 transition-colors duration-300"
                     >
@@ -193,9 +188,9 @@ const Cart = () => {
                     </button>
                   </div>
                   <span className="text-lg font-bold text-white">
-                    Rs. {(item.productId.productPrice * item.quantity).toFixed(2)}
+                    Rs. {item.productId.productPrice * item.quantity}
                   </span>
-                  <button 
+                  <button
                     onClick={() => handleDeleteItem(item._id)}
                     className="p-2 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors duration-300"
                   >
@@ -204,8 +199,8 @@ const Cart = () => {
                 </div>
               </motion.div>
             ))}
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -213,10 +208,10 @@ const Cart = () => {
             >
               <div className="flex justify-between items-center p-6 bg-gray-700/30 rounded-xl backdrop-blur-sm">
                 <span className="text-xl font-bold text-white">Subtotal</span>
-                <span className="text-2xl font-bold text-white">Rs. {subtotal.toFixed(2)}</span>
+                <span className="text-2xl font-bold text-white">Rs. {subtotal}</span>
               </div>
-              
-              <Link to={`/placeorder/${JSON.stringify(validCart)}`} className="block">
+
+              <Link to={`/placeorder/${JSON.stringify(cart)}`} className="block">
                 <button className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg font-semibold rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center space-x-3">
                   <span>Proceed to Checkout</span>
                   <ArrowRight size={20} />
