@@ -68,14 +68,14 @@ const PaymentSuccess = () => {
         {/* Action Buttons */}
         <div className="pt-6 space-y-4">
           <a 
-            href="/"
-            className="block w-full px-6 py-4 text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors duration-200"
+            href="/homepage"
+            className="block w-full px-6 py-2 text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors duration-200"
           >
             Continue Shopping
           </a>
           
           <a 
-            href="/orders"
+            href="/myorder"
             className="block text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
           >
             View Order Details
