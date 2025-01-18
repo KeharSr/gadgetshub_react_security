@@ -132,7 +132,7 @@ const Cart = () => {
           Your Tech Cart
         </motion.h1>
         
-        {cart.length === 0 ? (
+        {validCart.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
