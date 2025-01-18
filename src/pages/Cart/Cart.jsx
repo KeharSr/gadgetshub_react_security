@@ -153,7 +153,7 @@ const Cart = () => {
             transition={{ duration: 0.5 }}
             className="backdrop-blur-lg bg-gray-800/50 rounded-2xl p-6 shadow-2xl border border-gray-700"
           >
-            {cart.map((item, index) => (
+            {validCart.map((item, index) => (
               <motion.div 
                 key={item._id}
                 initial={{ opacity: 0, x: -20 }}
