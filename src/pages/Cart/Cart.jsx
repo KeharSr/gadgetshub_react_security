@@ -19,49 +19,72 @@ const Cart = () => {
     try {
       const res = await getCartApi();
       if (res.status === 200 && res.data && res.data.products) {
-        const cartItems = res.data.products.map(item => ({
-          ...item,
-          quantity: item.quantity
-        }));
+        // Filter out invalid items
+        const cartItems = res.data.products
+          .filter(item => 
+            item && 
+            item.productId && 
+            item.productId.productName && 
+            item.productId.productPrice && 
+            item.productId.productQuantity
+          )
+          .map(item => ({
+            ...item,
+            quantity: item.quantity || 1
+          }));
         setCart(cartItems);
         calculateSubtotal(cartItems);
       } else {
         setCart([]);
+        setSubtotal(0);
       }
     } catch (err) {
       console.error("Error fetching cart:", err);
       setCart([]);
+      setSubtotal(0);
     }
   };
 
-  const handleQuantityChange = (index, change) => {
-    const newQuantity = cart[index].quantity + change;
-    if (newQuantity < 1) {
-      toast.error("Quantity cannot be less than 1");
-      return;
-    }
-    if (newQuantity > cart[index].productId.productQuantity) {
-      toast.error("Out of Stock");
-      return;
-    }
+  const handleQuantityChange = async (index, change) => {
+    try {
+      const item = cart[index];
+      if (!item || !item.productId) return;
 
-    const newCart = [...cart];
-    newCart[index].quantity = newQuantity;
-    const data = {
-      productId: cart[index].productId._id,
-      quantity: newQuantity
-    }
-    updateCartItemApi(data)
-      .then((res) => {
+      const newQuantity = item.quantity + change;
+      if (newQuantity < 1) {
+        toast.error("Quantity cannot be less than 1");
+        return;
+      }
+      if (newQuantity > item.productId.productQuantity) {
+        toast.error("Out of Stock");
+        return;
+      }
+
+      const data = {
+        productId: item.productId._id,
+        quantity: newQuantity,
+        size: item.size || null,
+        color: item.color || null
+      };
+      
+      const res = await updateCartItemApi(data);
+      if (res.status === 200) {
         setQuantityChanged(!quantityChanged);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        toast.success("Cart updated successfully");
+      }
+    } catch (err) {
+      console.error("Error updating quantity:", err);
+      toast.error("Failed to update cart");
+    }
   };
 
   const calculateSubtotal = (items) => {
-    const total = items.reduce((acc, item) => acc + (item.productId.productPrice * item.quantity), 0);
+    const total = items.reduce((acc, item) => {
+      if (!item?.productId?.productPrice || !item?.quantity) {
+        return acc;
+      }
+      return acc + (item.productId.productPrice * item.quantity);
+    }, 0);
     setSubtotal(total);
   };
 
@@ -73,9 +96,28 @@ const Cart = () => {
         setQuantityChanged(!quantityChanged);
       }
     } catch (err) {
+      console.error("Error deleting item from cart:", err);
       toast.error("Failed to remove item from cart");
     }
   };
+
+  const getProductImage = (item) => {
+    if (!item?.productId?.productImage) {
+      return '';
+    }
+    
+    if (Array.isArray(item.productId.productImage)) {
+      return item.productId.productImage[0] || '';
+    }
+    return item.productId.productImage;
+  };
+
+  const validCart = cart.filter(item => 
+    item && 
+    item.productId && 
+    item.productId.productName && 
+    item.productId.productPrice
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
