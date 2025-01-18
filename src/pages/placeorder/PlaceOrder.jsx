@@ -359,7 +359,7 @@ const PlaceOrder = () => {
         const verifyResponse = await updateStatusApi({ orderId });
         if (verifyResponse.data.success) {
           toast.success("Payment completed and order updated successfully.");
-          navigate("/order-success"); // Redirect to a success page
+          navigate("/payment-success"); // Redirect to a success page
         } else {
           toast.error("Failed to update order status.");
         }

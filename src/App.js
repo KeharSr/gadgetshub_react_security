@@ -19,6 +19,7 @@ import EditProfile from "./pages/edit_profile/Edit_Profile";
 import EditAdminProfile from "./pages/admin/EditProfile";
 import EarBuds from "./pages/gadgets/EarBuds";
 import MobilePhones from "./pages/gadgets/MobilePhones";
+import PaymentVerification from "./pages/payment_success";
 
 function App() {
   return (
@@ -47,6 +48,8 @@ function App() {
           <Route path="/myorder" element={<MyOrders />} />
           <Route path="/favourites" element={<Favorites />} />
           <Route path="/profile" element={<EditProfile />} />
+          <Route path="/payment-success" element={< PaymentVerification/>} />
+
         </Route>
         <Route path="/forgetpassword" element={<ForgetPassword />} />
       </Routes>

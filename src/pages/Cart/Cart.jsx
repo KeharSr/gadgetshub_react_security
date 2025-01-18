@@ -132,7 +132,7 @@ const Cart = () => {
             <Package size={64} className="mx-auto text-gray-400 mb-4" />
             <p className="text-gray-300 text-xl mb-4">Your cart is empty</p>
             <Link
-              to="/"
+              to="/homepage"
               className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
             >
               <ShoppingCart className="mr-2" />
