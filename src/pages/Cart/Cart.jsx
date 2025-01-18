@@ -216,7 +216,7 @@ const Cart = () => {
                 <span className="text-2xl font-bold text-white">Rs. {subtotal.toFixed(2)}</span>
               </div>
               
-              <Link to={`/placeorder/${JSON.stringify(cart)}`} className="block">
+              <Link to={`/placeorder/${JSON.stringify(validCart)}`} className="block">
                 <button className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg font-semibold rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center space-x-3">
                   <span>Proceed to Checkout</span>
                   <ArrowRight size={20} />
