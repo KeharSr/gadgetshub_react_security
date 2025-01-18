@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Toaster, toast } from "react-hot-toast";
-import { loginUserApi, resendLoginOTPApi } from "../../apis/Api";
+import { loginUserApi, resendLoginOTPApi, verifyLoginOTPApi } from "../../apis/Api";
 import {
   Mail,
   Lock,
@@ -29,6 +29,7 @@ const Login = () => {
   const [otpError, setOTPError] = useState("");
   const [loginData, setLoginData] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const recaptchaRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -55,7 +56,11 @@ const Login = () => {
     if (!validation()) return;
 
     if (!captchaToken) {
-      toast.error("Please complete the CAPTCHA");
+      toast.error("CAPTCHA is missing or expired. Please complete it.");
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+        recaptchaRef.current.execute();
+      }
       return;
     }
 
@@ -78,9 +83,20 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        toast.error(
-          error.response?.data?.message || "Login failed. Please try again."
-        );
+        if (
+          error.response?.status === 401 &&
+          error.response?.data?.message.includes("CAPTCHA expired")
+        ) {
+          toast.error("CAPTCHA expired. Please refresh and try again.");
+          if (recaptchaRef.current) {
+            recaptchaRef.current.reset();
+            // recaptchaRef.current.execute();
+          }
+        } else {
+          toast.error(
+            error.response?.data?.message || "Login failed. Please try again."
+          );
+        }
       });
   };
 
@@ -95,7 +111,7 @@ const Login = () => {
       otp: otp,
     };
 
-    loginUserApi(verificationData)
+    verifyLoginOTPApi(verificationData)
       .then((res) => {
         if (res.data.success) {
           handleLoginSuccess(res.data);
@@ -191,7 +207,7 @@ const Login = () => {
           We've sent a verification code to {email}
         </p>
       </div>
-  
+
       <div className="space-y-4">
         <div className="relative">
           <input
@@ -211,7 +227,7 @@ const Login = () => {
           />
           {otpError && <p className="text-red-400 text-sm mt-1">{otpError}</p>}
         </div>
-  
+
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -223,7 +239,7 @@ const Login = () => {
         >
           Verify OTP
         </motion.button>
-  
+
         <button
           onClick={handleResendOTP}
           className="w-full text-blue-400 hover:text-blue-300 
@@ -233,7 +249,7 @@ const Login = () => {
         </button>
       </div>
     </div>
-  ), );
+  ));
 
   return (
     <div
@@ -331,7 +347,8 @@ const Login = () => {
 
                   <div className="flex justify-center bg-gray-800/50 p-4 rounded-xl backdrop-blur-sm">
                     <ReCAPTCHA
-                      sitekey="6LezGbUqAAAAAEGlXzgckrxE5ooEa5YqlCDUOKlU"
+                      ref={recaptchaRef}
+                      sitekey="6Lc3P7oqAAAAAObrxzhj_FyI_h0_rO4ZeoUKYw_A"
                       theme="dark"
                       onChange={(token) => setCaptchaToken(token)}
                     />

@@ -1,21 +1,53 @@
-import React from 'react'
-import { Outlet, Navigate } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const AdminRoutes = () => {
-    // 1. Get user data from local storage
-    const user = JSON.parse(localStorage.getItem('user'))
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-    // check user
-    // Check isAdmin= true
-    // if true : Access all the routes of Admin (Outlet)
-    // if false : Navigate to login page
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-    return user != null && user.isAdmin ? <Outlet />
-        : <Navigate to={'/login'} />
+        if (!token) {
+          throw new Error("Authentication token missing");
+        }
 
+        const response = await fetch("https://localhost:5000/api/user/check-admin", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Authorization failed");
+        }
 
+        const data = await response.json();
 
-}
+        if (!data.isAdmin) {
+          throw new Error("User is not an admin");
+        }
 
-export default AdminRoutes
+        setIsLoading(false); // Successfully verified admin status
+      } catch (error) {
+        console.error("Error in AdminRoutes:", error.message);
+        navigate("/"); // Redirect to homepage or login
+      }
+    };
+
+    checkAdmin();
+  }, [navigate]);
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Show a loading spinner or message
+  }
+
+  return <Outlet />;
+};
+
+export default AdminRoutes;
