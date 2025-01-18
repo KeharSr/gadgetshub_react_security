@@ -42,7 +42,7 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     toast.success("Logged out successfully");
-    window.location.href = "/onboarding";
+    window.location.href = "/";
   };
 
   return (

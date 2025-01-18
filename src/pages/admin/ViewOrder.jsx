@@ -42,14 +42,26 @@ const ViewOrder = () => {
   if (error) {
     return (
       <div
-        className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-4"
+        className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 m-4"
         role="alert"
       >
-        <p className="font-bold">Error</p>
-        <p>{error}</p>
+        <p className="font-bold">No Orders Available</p>
+        <p>There are currently no orders in the system.</p>
+        <p className="mt-2 text-sm text-gray-600">
+          Once customers start placing orders, they will appear here. You can use this time to review or update your inventory.
+        </p>
+        <div className="mt-4">
+          <a
+            href="/admin"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-300"
+          >
+            Add Product
+          </a>
+        </div>
       </div>
     );
   }
+  
 
   
 
@@ -127,7 +139,7 @@ const ViewOrder = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                   <span className="font-bold text-lg text-green-600">
-                    ${order.totalPrice.toFixed(2)}
+                    Rs {order.totalPrice.toFixed(2)}
                   </span>
                   <svg
                     className={`w-6 h-6 text-gray-600 transform transition-transform ${
@@ -175,8 +187,7 @@ const ViewOrder = () => {
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-gray-800">
-                                $
-                                {(
+                                Rs {(
                                   product.productId.productPrice *
                                   product.quantity
                                 ).toFixed(2)}

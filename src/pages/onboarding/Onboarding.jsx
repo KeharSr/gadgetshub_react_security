@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import Footer from '../../components/footer/Footer';
 import Navbar from "../../components/landing_navbar/LandingNavbar";
+import ProductsHomePage from '../Products/ProductsHomePage';
 
 const Onboarding = () => {
   const [products, setProducts] = useState([]);
@@ -146,7 +147,7 @@ const Onboarding = () => {
                   whileHover={{ y: -5 }}
                   className="transform transition-all duration-300"
                 >
-                  <Products productInformation={product} color={'blue'} />
+                  <ProductsHomePage productInformation={product} color={'blue'} />
                 </motion.div>
               ))}
             </div>

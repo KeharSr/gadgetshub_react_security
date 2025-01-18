@@ -93,12 +93,33 @@ const MyOrders = () => {
       </div>
     );
 
-  if (error)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="text-2xl font-bold text-red-400">Error: {error}</div>
-      </div>
-    );
+    if (!orders || orders.length === 0) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          <div className="p-8 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded-lg shadow-lg w-full max-w-md">
+            <h1 className="text-2xl font-bold mb-4">No Orders Found</h1>
+            <p className="text-sm mb-4">
+              You haven't placed any orders yet. Start exploring our amazing products and add something to your cart!
+            </p>
+            <div className="flex justify-center gap-4">
+              <a
+                href="/products"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition duration-300"
+              >
+                Browse Products
+              </a>
+              <a
+                href="/cart"
+                className="px-4 py-2 bg-gray-800 text-white rounded-lg shadow hover:bg-gray-900 transition duration-300"
+              >
+                View Cart
+              </a>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -171,7 +192,7 @@ const MyOrders = () => {
                         >
                           <div className="relative group">
                             <img
-                              src={`http://localhost:5000/products/${product.productId.productImage}`}
+                              src={`https://localhost:5000/products/${product.productId.productImage}`}
                               alt={product.productId.productName}
                               className="w-24 h-24 object-cover rounded-lg border border-gray-600 transition-transform duration-300 group-hover:scale-105"
                             />
@@ -190,7 +211,7 @@ const MyOrders = () => {
                                 </div>
                               </div>
                               <div className="text-lg font-medium text-blue-400">
-                                ₹{(product.productId.productPrice * product.quantity).toFixed(2)}
+                                Rs {(product.productId.productPrice * product.quantity).toFixed(2)}
                               </div>
                             </div>
                           </div>
