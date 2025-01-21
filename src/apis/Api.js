@@ -39,6 +39,9 @@ export const loginUserApi = (data) => {
   return Api.post("/api/user/login", data);
 };
 
+//update-password
+export const updatePasswordApi = (data) => Api.post("/api/user/update-password", data);
+
 // Add these new API endpoints to your existing API file:
 
 // Registration Email Verification OTP

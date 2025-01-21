@@ -18,6 +18,12 @@ import {
 } from "lucide-react";
 import loginui from "../../assets/images/loginui.png";
 
+const sanitizeInput = (input) => {
+  const element = document.createElement("div");
+  element.innerText = input;
+  return element.innerText;
+};
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,6 +41,26 @@ const Login = () => {
 
   const validation = () => {
     let isValid = true;
+
+    const sanitizedEmail = sanitizeInput(email.trim());
+    const sanitizedPassword = sanitizeInput(password.trim());
+
+    if (sanitizedEmail.trim() === "" || !sanitizedEmail.includes("@")) {
+      setEmailError("Email is empty or invalid");
+      isValid = false;
+    } else {
+      setEmailError("");
+    }
+
+    if (sanitizedPassword.trim() === "") {
+      setPasswordError("Password is empty");
+      isValid = false;
+    } else {
+      setPasswordError("");
+    }
+
+
+
     if (email.trim() === "" || !email.includes("@")) {
       setEmailError("Email is empty or invalid");
       isValid = false;
@@ -48,6 +74,14 @@ const Login = () => {
       setPasswordError("");
     }
     return isValid;
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(sanitizeInput(e.target.value));
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(sanitizeInput(e.target.value));
   };
 
   const handleLogin = (e) => {
@@ -65,8 +99,8 @@ const Login = () => {
     }
 
     const data = {
-      email: email,
-      password: password,
+      email: sanitizeInput(email),
+      password: sanitizeInput(password),
       recaptchaToken: captchaToken,
     };
 
@@ -108,7 +142,7 @@ const Login = () => {
 
     const verificationData = {
       ...loginData,
-      otp: otp,
+      otp: sanitizeInput(otp),
     };
 
     verifyLoginOTPApi(verificationData)
@@ -221,7 +255,7 @@ const Login = () => {
               backdrop-blur-sm transition-all duration-300`}
             placeholder="Enter OTP"
             value={otp}
-            onChange={(e) => setOTP(e.target.value)}
+            onChange={(e) => setOTP(sanitizeInput(e.target.value))}
             maxLength="6"
             autoComplete="off"
           />
@@ -309,7 +343,7 @@ const Login = () => {
                     type="email"
                     placeholder="Email address"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}
                     error={emailError}
                     name="email"
                   />
@@ -319,7 +353,7 @@ const Login = () => {
                     type="password"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                     error={passwordError}
                     name="password"
                     isPassword={true}
