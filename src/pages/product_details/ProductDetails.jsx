@@ -28,6 +28,10 @@ import {
   Headphones
 } from "lucide-react";
 
+const sanitizeInput=(input)=>{
+  return DOMPurify.sanitize(input.trim());
+};
+
 const ProductDetails = () => {
   const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -45,7 +49,7 @@ const ProductDetails = () => {
     const [productsRatings, setProductsRatings] = useState({});
   
     useEffect(() => {
-      getSingleProductApi(id)
+      getSingleProductApi(sanitizeInput(id))
         .then((res) => {
           if (res.status === 200) {
             setProduct(res.data.product);
@@ -60,7 +64,7 @@ const ProductDetails = () => {
     }, [id]);
   
     useEffect(() => {
-      getReviewsApi(id)
+      getReviewsApi(sanitizeInput(id))
         .then((res) => {
           if (res.status === 200) {
             setReviews(res.data.reviews);
@@ -72,7 +76,7 @@ const ProductDetails = () => {
     }, [id, reviewChange]);
   
     useEffect(() => {
-      getReviewsByProductAndUserApi(id)
+      getReviewsByProductAndUserApi(sanitizeInput(id))
         .then((res) => {
           if (res.status === 200) {
             setOwnReview(res.data.review);
@@ -92,7 +96,7 @@ const ProductDetails = () => {
     }, [id, reviewChange]);
   
     useEffect(() => {
-      getAverageRatingApi(id)
+      getAverageRatingApi(sanitizeInput(id))
         .then((res) => {
           if (res.status === 200) {
             const ratings = res.data.averageRating;
@@ -119,7 +123,7 @@ const ProductDetails = () => {
     };
   
     const handleQuantityChange = (newQuantity) => {
-      newQuantity = parseInt(newQuantity, 10);
+      newQuantity = parseInt(sanitizeInput(newQuantity), 10);
       if (newQuantity > quantity && isOutStock) {
         return;
       }
@@ -131,7 +135,7 @@ const ProductDetails = () => {
   
     const addToCart = () => {
       if (!isOutStock && product && quantity > 0) {
-        addToCartApi({ productId: product._id, quantity: quantity })
+        addToCartApi({ productId: sanitizeInput(product._id), quantity: sanitizeInput(quantity) })
           .then((res) => {
             if (res.status === 201) {
               toast.success("Product added to cart");
@@ -158,7 +162,7 @@ const ProductDetails = () => {
         return;
       }
   
-      addReviewApi({ productId: product._id, rating, review })
+      addReviewApi({ productId: sanitizeInput(product._id), rating:sanitizeInput(rating), review:sanitizeInput(review) })
         .then((response) => {
           if (response.status === 201) {
             toast.success(response.data.message);
@@ -189,7 +193,7 @@ const ProductDetails = () => {
         return;
       }
   
-      updateReviewApi(product._id, { rating, review })
+      updateReviewApi(sanitizeInput(product._id), { rating:sanitizeInput(rating), review:sanitizeInput(review) })
         .then((response) => {
           if (response.status === 200) {
             toast.success(response.data.message);
