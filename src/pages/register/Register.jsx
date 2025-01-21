@@ -23,6 +23,12 @@ import {
 } from "lucide-react";
 
 function Register() {
+  const sanitizeInput = (input) => {
+    const element = document.createElement("div");
+    element.innerText = input;
+    return element.innerText;
+  };
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -55,7 +61,7 @@ function Register() {
 
   const handleInputChange = useCallback(
     (field) => (e) => {
-      const value = e.target.value;
+      const value = sanitizeInput(e.target.value);
       setFormData((prev) => ({
         ...prev,
         [field]: value,
@@ -115,12 +121,12 @@ function Register() {
       if (!validateForm()) return;
 
       const data = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        userName: formData.userName,
-        email: formData.email,
-        phoneNumber: formData.phoneNumber,
-        password: formData.password,
+        firstName: sanitizeInput(formData.firstName),
+        lastName: sanitizeInput(formData.lastName),
+        userName: sanitizeInput(formData.userName),
+        email: sanitizeInput(formData.email),
+        phoneNumber: sanitizeInput(formData.phoneNumber),
+        password: sanitizeInput(formData.password),
       };
 
       registerUserApi(data)
@@ -129,7 +135,7 @@ function Register() {
             toast.error(res.data.message);
           } else {
             toast.success("Registration successful! Please verify your email.");
-            setRegistrationEmail(formData.email);
+            setRegistrationEmail(sanitizeInput(formData.email));
             setShowOTPForm(true);
           }
         })
@@ -145,12 +151,15 @@ function Register() {
   );
 
   const handleOTPVerification = useCallback(() => {
-    if (!otp) {
+    if (!otp.trim()) {
       setOTPError("Please enter the OTP");
       return;
     }
 
-    verifyRegistrationOTPApi({ email: registrationEmail, otp })
+    verifyRegistrationOTPApi({
+      email: sanitizeInput(registrationEmail),
+      otp: sanitizeInput(otp),
+    })
       .then((res) => {
         if (res.data.success) {
           toast.success("Email verified successfully!");
@@ -169,7 +178,7 @@ function Register() {
   }, [otp, registrationEmail]);
 
   const handleResendOTP = useCallback(() => {
-    resendRegistrationOTPApi({ email: registrationEmail })
+    resendRegistrationOTPApi({ email: sanitizeInput(registrationEmail) })
       .then((res) => {
         if (res.data.success) {
           toast.success("OTP resent successfully!");

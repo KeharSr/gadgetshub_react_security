@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Toaster, toast } from "react-hot-toast";
+import DOMPurify from "dompurify";
 import { loginUserApi, resendLoginOTPApi, verifyLoginOTPApi } from "../../apis/Api";
 import {
   Mail,
@@ -19,9 +20,7 @@ import {
 import loginui from "../../assets/images/loginui.png";
 
 const sanitizeInput = (input) => {
-  const element = document.createElement("div");
-  element.innerText = input;
-  return element.innerText;
+return DOMPurify.sanitize(input.trim());
 };
 
 const Login = () => {
@@ -416,7 +415,7 @@ const Login = () => {
                 </div>
               </>
             ) : (
-              <OTPInput />
+            <OTPInput />
             )}
           </div>
 
