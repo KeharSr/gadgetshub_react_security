@@ -35,12 +35,12 @@ export const loginUserApi = (data) => {
   if (data.otp) {
     return Api.post("/api/user/login", data);
   }
-  // First step of login (email + password)
   return Api.post("/api/user/login", data);
 };
 
 //update-password
-export const updatePasswordApi = (data) => Api.post("/api/user/update-password", data);
+export const updatePasswordApi = (data) =>
+  Api.post("/api/user/update-password", data);
 
 // Add these new API endpoints to your existing API file:
 
@@ -193,25 +193,25 @@ export const deleteFavouriteApi = (id) =>
 
 /// Payment api
 export const createPaymentApi = (data) =>
-	Api.post(`/api/payment/add`, data, config2);
+  Api.post(`/api/payment/add`, data, config2);
 
 const KhaltiApi = axios.create({
-	baseURL: "https://test-pay.khalti.com/",
-	headers: {
-		"Content-Type": "application/json",
-		authorization: `key test_public_key_38acaf5cadbe41e781e13d35f19509f4`,
-	},
+  baseURL: "https://test-pay.khalti.com/",
+  headers: {
+    "Content-Type": "application/json",
+    authorization: `key test_public_key_38acaf5cadbe41e781e13d35f19509f4`,
+  },
 });
 
 export const initiateKhaltiPayment = (data) =>
-	KhaltiApi.post("api/v2/epayment/initiate/", data);
+  KhaltiApi.post("api/v2/epayment/initiate/", data);
 
 // Function to initialize Khalti payment
 export const initializeKhaltiPaymentApi = (data) =>
-    Api.post("api/khalti/initialize-khalti", data);
+  Api.post("api/khalti/initialize-khalti", data);
 
 // Function to verify Khalti payment
 export const verifyKhaltiPaymentApi = (params) =>
-    Api.get("/api/khalti/complete-khalti-payment", { params });
+  Api.get("/api/khalti/complete-khalti-payment", { params });
 
 export default Api;

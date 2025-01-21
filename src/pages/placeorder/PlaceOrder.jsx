@@ -1,5 +1,4 @@
-
-
+import DOMPurify from "dompurify";
 import React, { useEffect, useState } from "react";
 import {
   placeOrderApi,
@@ -9,6 +8,10 @@ import {
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
+
+const sanitizeInput = (input) => {
+  return DOMPurify.sanitize(input.trim());
+};
 
 const PlaceOrder = () => {
   const [cart, setCart] = useState([]);
@@ -29,7 +32,7 @@ const PlaceOrder = () => {
   });
 
   useEffect(() => {
-    const carts = JSON.parse(params.cart);
+    const carts = JSON.parse(sanitizeInput(params.cart));
     if (params.cart) {
       setCart(JSON.parse(params.cart));
       calculateSubtotal(carts);
@@ -46,7 +49,7 @@ const PlaceOrder = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: sanitizeInput(value) }));
   };
 
   const validateOrderData = () => {
@@ -91,8 +94,8 @@ const PlaceOrder = () => {
   const handlePayment = async (orderId, totalPrice) => {
     try {
       const paymentResponse = await initializeKhaltiPaymentApi({
-        orderId,
-        totalPrice,
+        orderId: sanitizeInput(orderId),
+        totalPrice: sanitizeInput(totalPrice),
         website_url: window.location.origin,
       });
 
@@ -126,16 +129,21 @@ const PlaceOrder = () => {
 
     const total = subtotal + formData.deliveryFee;
     const orderData = {
-      carts: cart,
-      totalPrice: total,
-      name: `${formData.firstName} ${formData.lastName}`,
-      email: formData.email,
-      street: formData.street,
-      city: formData.city,
-      state: formData.state,
-      zipCode: formData.zipCode,
-      country: formData.country,
-      phone: formData.phone,
+      carts: cart.map((item) => ({
+        productId: sanitizeInput(item.productId._id),
+        quantity: sanitizeInput(item.quantity),
+      })),
+      totalPrice: sanitizeInput(total),
+      name: `${sanitizeInput(formData.firstName)} ${sanitizeInput(
+        formData.lastName
+      )}`,
+      email: sanitizeInput(formData.email),
+      street: sanitizeInput(formData.street),
+      city: sanitizeInput(formData.city),
+      state: sanitizeInput(formData.state),
+      zipCode: sanitizeInput(formData.zipCode),
+      country: sanitizeInput(formData.country),
+      phone: sanitizeInput(formData.phone),
       payment: false,
     };
 

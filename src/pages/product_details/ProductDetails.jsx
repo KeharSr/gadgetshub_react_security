@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import DOMPurify from "dompurify";
 import { useParams } from "react-router-dom";
 import {
   getSingleProductApi,
