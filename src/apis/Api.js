@@ -75,6 +75,10 @@ export const uploadProfilePictureApi = (data) =>
 export const forgotPasswordApi = (data) =>
   Api.post("/api/user/forgot_password", data);
 
+// get password history api
+export const getPasswordHistoryApi = (data) =>
+  Api.post("/api/user/get-password-history", data);
+
 // verify otp
 export const verifyOtpApi = (data) => Api.post("/api/user/verify_otp", data);
 

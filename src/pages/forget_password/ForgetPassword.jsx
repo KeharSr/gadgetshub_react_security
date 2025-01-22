@@ -1,48 +1,82 @@
-import React, { useState } from 'react';
-import { toast } from 'react-toastify';
-import { forgotPasswordApi, verifyOtpApi } from '../../apis/Api';
-import { Password } from '@mui/icons-material';
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import {
+  forgotPasswordApi,
+  verifyOtpApi,
+  getPasswordHistoryApi,
+} from "../../apis/Api"; // Add `getPasswordHistoryApi`
+import bcrypt from "bcryptjs";
 
 const ForgetPassword = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState("");
   const [isSent, setIsSent] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [password, setNewPassword] = useState('');
+  const [otp, setOtp] = useState("");
+  const [password, setNewPassword] = useState("");
+  const [passwordHistory, setPasswordHistory] = useState([]); // Store password history
 
-  const handleSendOtp = (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
-    forgotPasswordApi({ phoneNumber })
-      .then((res) => {
-        if (res.status === 200) {
-          toast.success(res.data.message);
-          setIsSent(true);
+    try {
+      const res = await forgotPasswordApi({ email });
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        setIsSent(true);
+
+        // Fetch password history after OTP is sent
+        const historyRes = await getPasswordHistoryApi({ email });
+        if (historyRes.status === 200) {
+          setPasswordHistory(historyRes.data.passwordHistory); // Store password history
         }
-      })
-      .catch((err) => {
-        if (err.response.status === 400 || err.response.status === 500) {
-          toast.error(err.response.data.message);
-        }
-      });
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Failed to send OTP.";
+      toast.error(errorMessage);
+    }
   };
 
-  const handleVerifyOtp = (e) => {
+  const validateNewPassword = async (password) => {
+    for (const oldPassword of passwordHistory) {
+      const isPasswordReused = await bcrypt.compare(password, oldPassword);
+      if (isPasswordReused) {
+        return false; // Password matches one of the old passwords
+      }
+    }
+    return true; // Password is unique
+  };
+
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
+
+    // Validate new password against history
+    const isValidPassword = await validateNewPassword(password);
+    if (!isValidPassword) {
+      toast.error(
+        "New password cannot be the same as any previously used passwords."
+      );
+      return;
+    }
+
     const data = {
-      phoneNumber: phoneNumber,
+      email: email,
       otp: otp,
       password: password,
     };
-    verifyOtpApi(data)
-      .then((res) => {
-        if (res.status === 200) {
-          toast.success(res.data.message);
-        }
-      })
-      .catch((err) => {
-        if (err.response.status === 400 || err.response.status === 500) {
-          toast.error(err.response.data.message);
-        }
-      });
+
+    try {
+      const res = await verifyOtpApi(data);
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        // Optionally reset form or navigate to login
+        setEmail("");
+        setOtp("");
+        setNewPassword("");
+        setPasswordHistory([]); // Clear password history
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || "Failed to verify OTP.";
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -57,21 +91,21 @@ const ForgetPassword = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6">
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                Phone Number
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">+977</span>
-                </div>
                 <input
-                  type="tel"
-                  name="phone"
-                  id="phone"
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-16 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Phone Number"
+                  type="email"
+                  name="email"
+                  id="email"
+                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  placeholder="Email Address"
                   disabled={isSent}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -93,20 +127,33 @@ const ForgetPassword = () => {
                 <div className="rounded-md bg-blue-50 p-4">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-blue-400"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div className="ml-3 flex-1 md:flex md:justify-between">
                       <p className="text-sm text-blue-700">
-                        OTP has been sent to your phone number {phoneNumber}
+                        OTP has been sent to your email {email}.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="otp"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     OTP
                   </label>
                   <input
@@ -120,7 +167,10 @@ const ForgetPassword = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="new-password"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     New Password
                   </label>
                   <input
