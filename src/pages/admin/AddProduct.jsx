@@ -1,16 +1,21 @@
+import React, { useState } from "react";
+import { toast } from "react-hot-toast";
+import DOMPurify from "dompurify"; // Import DOMPurify for sanitization
+import { createProductApi } from "../../apis/Api";
+import { motion } from "framer-motion";
+import { Camera, Package, DollarSign, Hash, FileText } from "lucide-react";
 
-import React, { useState } from 'react';
-import { toast } from 'react-hot-toast';
-import { createProductApi } from '../../apis/Api';
-import { motion } from 'framer-motion';
-import { Camera, Package, DollarSign, Hash, FileText } from 'lucide-react';
+// Function to sanitize inputs and disallow any HTML tags
+const sanitizeInput = (input) => {
+  return DOMPurify.sanitize(input.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+};
 
 const AddProduct = () => {
-  const [productName, setProductName] = useState('');
-  const [productCategory, setProductCategory] = useState('');
-  const [productPrice, setProductPrice] = useState('');
-  const [productDescription, setProductDescription] = useState('');
-  const [productQuantity, setProductQuantity] = useState('');
+  const [productName, setProductName] = useState("");
+  const [productCategory, setProductCategory] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productDescription, setProductDescription] = useState("");
+  const [productQuantity, setProductQuantity] = useState("");
   const [productImage, setProductImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -32,15 +37,15 @@ const AddProduct = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('productName', productName);
-    formData.append('productPrice', productPrice);
-    formData.append('productCategory', productCategory);
-    formData.append('productDescription', productDescription);
-    formData.append('productQuantity', productQuantity);
-    formData.append('productImage', productImage);
+    const sanitizedFormData = new FormData();
+    sanitizedFormData.append("productName", sanitizeInput(productName));
+    sanitizedFormData.append("productPrice", sanitizeInput(productPrice));
+    sanitizedFormData.append("productCategory", sanitizeInput(productCategory));
+    sanitizedFormData.append("productDescription", sanitizeInput(productDescription));
+    sanitizedFormData.append("productQuantity", sanitizeInput(productQuantity));
+    sanitizedFormData.append("productImage", productImage); // Files don't require sanitization
 
-    createProductApi(formData)
+    createProductApi(sanitizedFormData)
       .then((res) => {
         if (res.data.success) {
           toast.success(res.data.message);
@@ -60,20 +65,22 @@ const AddProduct = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className="p-8 max-w-5xl mx-auto bg-white rounded-xl shadow-2xl"
     >
-      <h1 className="text-4xl font-bold text-center mb-10 text-gray-800">Add New Product</h1>
+      <h1 className="text-4xl font-bold text-center mb-10 text-gray-800">
+        Add New Product
+      </h1>
       <form className="space-y-8" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="col-span-1"
-          >
-            <label className="flex items-center text-lg font-medium text-gray-700 mb-3" htmlFor="productName">
+          <motion.div whileHover={{ scale: 1.02 }} className="col-span-1">
+            <label
+              className="flex items-center text-lg font-medium text-gray-700 mb-3"
+              htmlFor="productName"
+            >
               <Package className="mr-2" size={24} />
               Product Name
             </label>
@@ -83,14 +90,14 @@ const AddProduct = () => {
               type="text"
               placeholder="Enter product name"
               value={productName}
-              onChange={(e) => setProductName(e.target.value)}
+              onChange={(e) => setProductName(sanitizeInput(e.target.value))}
             />
           </motion.div>
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="col-span-1"
-          >
-            <label className="flex items-center text-lg font-medium text-gray-700 mb-3" htmlFor="productCategory">
+          <motion.div whileHover={{ scale: 1.02 }} className="col-span-1">
+            <label
+              className="flex items-center text-lg font-medium text-gray-700 mb-3"
+              htmlFor="productCategory"
+            >
               <Hash className="mr-2" size={24} />
               Product Category
             </label>
@@ -98,18 +105,21 @@ const AddProduct = () => {
               className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
               id="productCategory"
               value={productCategory}
-              onChange={(e) => setProductCategory(e.target.value)}
+              onChange={(e) => setProductCategory(sanitizeInput(e.target.value))}
             >
-              <option value="" disabled>Select Category</option>
+              <option value="" disabled>
+                Select Category
+              </option>
               <option value="Ear Buds">Ear Buds</option>
               <option value="Mobile Phones">Mobile Phones</option>
             </select>
           </motion.div>
         </div>
-        <motion.div 
-          whileHover={{ scale: 1.02 }}
-        >
-          <label className="flex items-center text-lg font-medium text-gray-700 mb-3" htmlFor="productPrice">
+        <motion.div whileHover={{ scale: 1.02 }}>
+          <label
+            className="flex items-center text-lg font-medium text-gray-700 mb-3"
+            htmlFor="productPrice"
+          >
             <DollarSign className="mr-2" size={24} />
             Product Price
           </label>
@@ -119,13 +129,14 @@ const AddProduct = () => {
             type="text"
             placeholder="Enter product price"
             value={productPrice}
-            onChange={(e) => setProductPrice(e.target.value)}
+            onChange={(e) => setProductPrice(sanitizeInput(e.target.value))}
           />
         </motion.div>
-        <motion.div 
-          whileHover={{ scale: 1.02 }}
-        >
-          <label className="flex items-center text-lg font-medium text-gray-700 mb-3" htmlFor="productQuantity">
+        <motion.div whileHover={{ scale: 1.02 }}>
+          <label
+            className="flex items-center text-lg font-medium text-gray-700 mb-3"
+            htmlFor="productQuantity"
+          >
             <Hash className="mr-2" size={24} />
             Product Quantity
           </label>
@@ -135,13 +146,14 @@ const AddProduct = () => {
             type="text"
             placeholder="Enter product quantity"
             value={productQuantity}
-            onChange={(e) => setProductQuantity(e.target.value)}
+            onChange={(e) => setProductQuantity(sanitizeInput(e.target.value))}
           />
         </motion.div>
-        <motion.div 
-          whileHover={{ scale: 1.02 }}
-        >
-          <label className="flex items-center text-lg font-medium text-gray-700 mb-3" htmlFor="productDescription">
+        <motion.div whileHover={{ scale: 1.02 }}>
+          <label
+            className="flex items-center text-lg font-medium text-gray-700 mb-3"
+            htmlFor="productDescription"
+          >
             <FileText className="mr-2" size={24} />
             Product Description
           </label>
@@ -151,14 +163,14 @@ const AddProduct = () => {
             rows="5"
             placeholder="Enter product description"
             value={productDescription}
-            onChange={(e) => setProductDescription(e.target.value)}
+            onChange={(e) => setProductDescription(sanitizeInput(e.target.value))}
           />
         </motion.div>
-        <motion.div 
-          whileHover={{ scale: 1.02 }}
-          className="relative"
-        >
-          <label className="flex items-center text-lg font-medium text-gray-700 mb-3" htmlFor="productImage">
+        <motion.div whileHover={{ scale: 1.02 }} className="relative">
+          <label
+            className="flex items-center text-lg font-medium text-gray-700 mb-3"
+            htmlFor="productImage"
+          >
             <Camera className="mr-2" size={24} />
             Upload Image
           </label>
@@ -169,8 +181,8 @@ const AddProduct = () => {
             onChange={handleImage}
             accept="image/*"
           />
-          <label 
-            htmlFor="productImage" 
+          <label
+            htmlFor="productImage"
             className="cursor-pointer flex items-center justify-center w-full h-64 border-3 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition duration-150 ease-in-out overflow-hidden"
           >
             {imagePreview ? (
@@ -181,13 +193,17 @@ const AddProduct = () => {
                   className="absolute inset-0 w-full h-full object-contain"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-white text-lg font-semibold">Change Image</p>
+                  <p className="text-white text-lg font-semibold">
+                    Change Image
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="text-center">
                 <Camera className="mx-auto h-16 w-16 text-gray-400" />
-                <p className="mt-2 text-lg text-gray-600">Click to upload image</p>
+                <p className="mt-2 text-lg text-gray-600">
+                  Click to upload image
+                </p>
               </div>
             )}
           </label>

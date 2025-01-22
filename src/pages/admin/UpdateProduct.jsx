@@ -1,33 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import Modal from 'react-modal';
-import { updateProduct, getSingleProductApi } from '../../apis/Api';
-import { toast } from 'react-hot-toast';
+import React, { useEffect, useState } from "react";
+import Modal from "react-modal";
+import { updateProduct, getSingleProductApi } from "../../apis/Api";
+import { toast } from "react-hot-toast";
+import DOMPurify from "dompurify"; // Import DOMPurify for sanitization
 
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
+
+// Function to sanitize inputs and disallow any HTML tags
+const sanitizeInput = (input) => {
+  return DOMPurify.sanitize(input.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+};
 
 const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
-  const [productName, setProductName] = useState('');
-  const [productPrice, setProductPrice] = useState('');
-  const [productCategory, setProductCategory] = useState('');
-  const [productQuantity, setProductQuantity] = useState('');
-  const [productDescription, setProductDescription] = useState('');
+  const [productName, setProductName] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productCategory, setProductCategory] = useState("");
+  const [productQuantity, setProductQuantity] = useState("");
+  const [productDescription, setProductDescription] = useState("");
   const [productNewImage, setProductNewImage] = useState(null);
   const [previewNewImage, setPreviewNewImage] = useState(null);
-  const [oldImage, setOldImage] = useState('');
+  const [oldImage, setOldImage] = useState("");
 
   useEffect(() => {
     if (productId) {
       getSingleProductApi(productId)
         .then((res) => {
-          setProductName(res.data.product.productName);
-          setProductPrice(res.data.product.productPrice);
-          setProductCategory(res.data.product.productCategory);
-          setProductQuantity(res.data.product.productQuantity);
-          setProductDescription(res.data.product.productDescription);
-          setOldImage(res.data.product.productImage);
+          const product = res.data.product;
+          setProductName(sanitizeInput(product.productName));
+          setProductPrice(sanitizeInput(product.productPrice.toString()));
+          setProductCategory(sanitizeInput(product.productCategory));
+          setProductQuantity(sanitizeInput(product.productQuantity.toString()));
+          setProductDescription(sanitizeInput(product.productDescription));
+          setOldImage(product.productImage);
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
+          toast.error("Failed to fetch product details.");
         });
     }
   }, [productId]);
@@ -35,32 +43,33 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
   const handleImage = (event) => {
     const file = event.target.files[0];
     setProductNewImage(file);
-    setPreviewNewImage(URL.createObjectURL(file));
+    setPreviewNewImage(file ? URL.createObjectURL(file) : null);
   };
 
   const handleUpdate = (e) => {
     e.preventDefault();
+
     const formData = new FormData();
-    formData.append('productName', productName);
-    formData.append('productPrice', productPrice);
-    formData.append('productCategory', productCategory);
-    formData.append('productQuantity', productQuantity);
-    formData.append('productDescription', productDescription);
+    formData.append("productName", sanitizeInput(productName));
+    formData.append("productPrice", sanitizeInput(productPrice));
+    formData.append("productCategory", sanitizeInput(productCategory));
+    formData.append("productQuantity", sanitizeInput(productQuantity));
+    formData.append("productDescription", sanitizeInput(productDescription));
     if (productNewImage) {
-      formData.append('productImage', productNewImage);
+      formData.append("productImage", productNewImage); // File input does not require sanitization
     }
+
     updateProduct(productId, formData)
       .then((res) => {
-        if (res.data.success ) {
+        if (res.data.success) {
           toast.success(res.data.message);
           onUpdate();
           onRequestClose();
         }
       })
       .catch((error) => {
-        if (error.response) {
-          toast.error(error.response.data.message);
-        }
+        console.error(error);
+        toast.error(error.response?.data?.message || "Failed to update product.");
       });
   };
 
@@ -76,20 +85,24 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
       <form onSubmit={handleUpdate} className="space-y-4">
         <div className="flex space-x-4">
           <div className="flex-1">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Product Name</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Product Name
+            </label>
             <input
               type="text"
               value={productName}
-              onChange={(e) => setProductName(e.target.value)}
+              onChange={(e) => setProductName(sanitizeInput(e.target.value))}
               className="w-full px-3 py-2 border rounded"
               required
             />
           </div>
           <div className="flex-1">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Category</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Category
+            </label>
             <select
               value={productCategory}
-              onChange={(e) => setProductCategory(e.target.value)}
+              onChange={(e) => setProductCategory(sanitizeInput(e.target.value))}
               className="w-full px-3 py-2 border rounded"
               required
             >
@@ -99,38 +112,44 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
           </div>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Price</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Price
+          </label>
           <input
             type="number"
             value={productPrice}
-            onChange={(e) => setProductPrice(e.target.value)}
+            onChange={(e) => setProductPrice(sanitizeInput(e.target.value))}
             className="w-full px-3 py-2 border rounded"
             required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Description</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Description
+          </label>
           <textarea
             value={productDescription}
-            onChange={(e) => setProductDescription(e.target.value)}
+            onChange={(e) => setProductDescription(sanitizeInput(e.target.value))}
             className="w-full px-3 py-2 border rounded"
             required
           />
         </div>
-        
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Quantity
+          </label>
           <input
             type="number"
             value={productQuantity}
-            onChange={(e) => setProductQuantity(e.target.value)}
+            onChange={(e) => setProductQuantity(sanitizeInput(e.target.value))}
             className="w-full px-3 py-2 border rounded"
             required
           />
         </div>
-
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Current Image</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Current Image
+          </label>
           <div className="flex justify-center items-center mb-2">
             {oldImage ? (
               <img
@@ -142,7 +161,9 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
               <p>No image available</p>
             )}
           </div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">New Image</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            New Image
+          </label>
           <input
             type="file"
             onChange={handleImage}

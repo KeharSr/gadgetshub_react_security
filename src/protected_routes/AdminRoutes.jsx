@@ -28,12 +28,11 @@ const AdminRoutes = () => {
         }
 
         const data = await response.json();
-
         if (!data.isAdmin) {
           throw new Error("User is not an admin");
         }
 
-        setIsLoading(false); // Successfully verified admin status
+        setIsLoading(false);
       } catch (error) {
         console.error("Error in AdminRoutes:", error.message);
         navigate("/"); // Redirect to homepage or login
@@ -44,7 +43,7 @@ const AdminRoutes = () => {
   }, [navigate]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading spinner or message
+    return <div>Loading...</div>;
   }
 
   return <Outlet />;
