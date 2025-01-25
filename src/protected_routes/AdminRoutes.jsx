@@ -15,7 +15,6 @@ const AdminRoutes = () => {
           navigate("/"); // Redirect to login
           return;
         }
-
         const response = await fetch("https://localhost:5000/api/user/check-admin", {
           method: "GET",
           headers: {
@@ -23,7 +22,6 @@ const AdminRoutes = () => {
             "Content-Type": "application/json",
           },
         });
-
         if (!response.ok) {
           const error = await response.json();
           throw new Error(error.message || "Authorization failed");
@@ -41,7 +39,6 @@ const AdminRoutes = () => {
         navigate("/"); // Redirect to homepage or login
       }
     };
-
     checkAdmin();
   }, [navigate]);
 
