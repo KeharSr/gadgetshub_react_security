@@ -4,7 +4,7 @@ import Products from "../Products/Products";
 import toast from "react-hot-toast";
 import Navbar from "../../components/navbar/Navbar";
 import { motion } from "framer-motion";
-import { Smartphone, Loader, ChevronRight, ChevronLeft, Star, Camera, Cpu, Battery } from "lucide-react";
+import { Smartphone, Loader, ChevronRight, ChevronLeft,  Camera, Cpu, Battery } from "lucide-react";
 
 const MobilePhones = () => {
   const [products, setProducts] = useState([]);
@@ -22,7 +22,7 @@ const MobilePhones = () => {
     setLoading(true);
     getProductsByCategoryApi("Mobile Phones", currentPage, limit)
       .then((res) => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           setProducts(res.data.products);
           setTotalPages(Math.ceil(res.data.totalCount / limit));
         }

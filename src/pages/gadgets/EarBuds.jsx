@@ -4,7 +4,7 @@ import Products from '../Products/Products';
 import toast from 'react-hot-toast';
 import Navbar from '../../components/navbar/Navbar';
 import { motion } from 'framer-motion';
-import { Headphones, Loader, ChevronLeft, ChevronRight, Star, Battery, Wifi, Bluetooth } from 'lucide-react';
+import { Headphones, Loader, ChevronLeft, ChevronRight,  Battery, Wifi, Bluetooth } from 'lucide-react';
 
 const EarBuds = () => {
   const [products, setProducts] = useState([]);
@@ -22,7 +22,7 @@ const EarBuds = () => {
     setLoading(true);
     try {
       const res = await getProductsByCategoryApi('Ear Buds', page, limit);
-      if (res.status === 201) {
+      if (res.status === 200) {
         setProducts(res.data.products);
         setTotalPages(Math.ceil(res.data.totalCount / limit));
       }

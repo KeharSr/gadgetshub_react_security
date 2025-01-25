@@ -65,7 +65,7 @@ const EditProfile = () => {
         })
         .catch((err) => {
           console.log(err);
-          toast.error("Failed to upload profile picture");
+          toast.error(err.response?.data?.message);
         })
         .finally(() => {
           setIsLoading(false);

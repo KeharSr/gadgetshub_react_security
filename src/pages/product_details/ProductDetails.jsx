@@ -29,9 +29,6 @@ import {
   Headphones
 } from "lucide-react";
 
-const sanitizeInput=(input)=>{
-  return DOMPurify.sanitize(input.trim());
-};
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -150,6 +147,11 @@ const ProductDetails = () => {
           });
       }
     };
+
+    const sanitizeInput=(input)=>{
+      return DOMPurify.sanitize(input);
+    };
+    
   
     const buyNow = () => {
       addToCart();
@@ -275,7 +277,7 @@ const ProductDetails = () => {
                   <motion.img
                     key={index}
                     whileHover={{ scale: 1.05 }}
-                    src={`http://localhost:5000/products/${img}`}
+                    src={`https://localhost:5000/products/${img}`}
                     alt={`Additional ${index}`}
                     className="w-24 h-24 object-cover rounded-lg cursor-pointer border border-gray-700 hover:border-blue-500 transition duration-300"
                     onClick={() => setMainImage(img)}

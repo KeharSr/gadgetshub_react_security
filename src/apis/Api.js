@@ -38,6 +38,19 @@ export const loginUserApi = (data) => {
   return Api.post("/api/user/login", data);
 };
 
+export const fetchActivityLogsApi = async () => {
+  const token = localStorage.getItem("token"); // Fetch token from local storage
+  const response = await axios.get(
+    "https://localhost:5000/api/logs/activity-logs",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data.logs;
+};
+
 //update-password
 export const updatePasswordApi = (data) =>
   Api.post("/api/user/update-password", data);
@@ -92,7 +105,8 @@ export const getUserByGoogleEmail = (data) =>
 //=========================== Product Apis ===========================
 
 // Create Product Api
-export const createProductApi = (data) => Api.post("/api/product/create", data);
+export const createProductApi = (data) =>
+  Api.post("/api/product/create", data, config);
 
 // Get All Products Api
 export const getAllProductsApi = () =>
@@ -208,14 +222,14 @@ const KhaltiApi = axios.create({
 });
 
 export const initiateKhaltiPayment = (data) =>
-  KhaltiApi.post("api/v2/epayment/initiate/", data);
+  KhaltiApi.post("api/v2/epayment/initiate/", data,config);
 
 // Function to initialize Khalti payment
 export const initializeKhaltiPaymentApi = (data) =>
-  Api.post("api/khalti/initialize-khalti", data);
+  Api.post("api/khalti/initialize-khalti", data, config);
 
 // Function to verify Khalti payment
 export const verifyKhaltiPaymentApi = (params) =>
-  Api.get("/api/khalti/complete-khalti-payment", { params });
+  Api.get("/api/khalti/complete-khalti-payment", { params }, config);
 
 export default Api;

@@ -20,7 +20,7 @@ const HomePage = () => {
   useEffect(() => {
     getAllProductsApi()
       .then((res) => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           setProducts(res.data.products);
         }
         setLoading(false);

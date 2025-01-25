@@ -20,6 +20,7 @@ import EditAdminProfile from "./pages/admin/EditProfile";
 import EarBuds from "./pages/gadgets/EarBuds";
 import MobilePhones from "./pages/gadgets/MobilePhones";
 import PaymentVerification from "./pages/payment_success";
+import ActivityLog from "./pages/admin/ActivityLogs";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route element={<AdminRoutes />}>
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/adminprofile" element={<EditAdminProfile />} />
+          <Route path="/logs" element={<ActivityLog/>} />
           {/* <Route path='/add-product' element={<AddProduct />} /> */}
         </Route>
 

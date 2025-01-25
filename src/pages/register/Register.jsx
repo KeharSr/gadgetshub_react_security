@@ -93,6 +93,9 @@ function Register() {
     }
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
+    //   isValid = false;
+    // } else if (!formData.email.includes("@") || !formData.email.includes(".")) {
+      newErrors.email = "Please enter a valid email address";
       isValid = false;
     }
     if (!formData.phoneNumber.trim()) {

@@ -11,13 +11,15 @@ const AdminRoutes = () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-          throw new Error("Authentication token missing");
+          console.error("Authentication token is missing.");
+          navigate("/"); // Redirect to login
+          return;
         }
 
         const response = await fetch("https://localhost:5000/api/user/check-admin", {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Correct header key
             "Content-Type": "application/json",
           },
         });
