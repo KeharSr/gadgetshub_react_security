@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { fetchActivityLogsApi } from "../../apis/Api";
 import { toast } from "react-toastify";
-import { FiAlertCircle, FiCheckCircle, FiClock, FiUser, FiGlobe, FiCommand, FiCpu, FiServer } from "react-icons/fi";
+import {
+  FiAlertCircle,
+  FiCheckCircle,
+  FiClock,
+  FiUser,
+  FiGlobe,
+  FiCommand,
+  FiCpu,
+  FiServer,
+} from "react-icons/fi";
 import { motion } from "framer-motion";
 
 const ActivityLog = () => {
@@ -27,7 +36,7 @@ const ActivityLog = () => {
       GET: "bg-blue-100 text-blue-800",
       POST: "bg-green-100 text-green-800",
       PUT: "bg-yellow-100 text-yellow-800",
-      DELETE: "bg-red-100 text-red-800"
+      DELETE: "bg-red-100 text-red-800",
     };
     return colors[method] || "bg-gray-100 text-gray-800";
   };
@@ -122,7 +131,9 @@ const ActivityLog = () => {
                       {log.username[0].toUpperCase()}
                     </div>
                     <div className="ml-3">
-                      <div className="text-sm font-medium text-gray-900">{log.username}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {log.username}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -132,7 +143,11 @@ const ActivityLog = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getMethodColor(log.method)}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getMethodColor(
+                      log.method
+                    )}`}
+                  >
                     {log.method}
                   </span>
                 </td>
@@ -142,7 +157,11 @@ const ActivityLog = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className={`flex items-center ${getStatusColor(log.status)}`}>
+                  <div
+                    className={`flex items-center ${getStatusColor(
+                      log.status
+                    )}`}
+                  >
                     {log.status >= 200 && log.status < 300 ? (
                       <FiCheckCircle className="mr-1" />
                     ) : (
