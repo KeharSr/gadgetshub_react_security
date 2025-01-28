@@ -16,7 +16,6 @@ import {
 } from "../../apis/Api";
 import { toast } from "react-hot-toast";
 
-
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [isSent, setIsSent] = useState(false);

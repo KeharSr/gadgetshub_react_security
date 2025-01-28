@@ -4,7 +4,11 @@ import { motion } from "framer-motion";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Toaster, toast } from "react-hot-toast";
 import DOMPurify from "dompurify";
-import { loginUserApi, resendLoginOTPApi, verifyLoginOTPApi } from "../../apis/Api";
+import {
+  loginUserApi,
+  resendLoginOTPApi,
+  verifyLoginOTPApi,
+} from "../../apis/Api";
 import {
   Mail,
   Lock,
@@ -16,11 +20,12 @@ import {
   Shield,
   Eye,
   EyeOff,
+  Loader2,
 } from "lucide-react";
 import loginui from "../../assets/images/loginui.png";
 
 const sanitizeInput = (input) => {
-return DOMPurify.sanitize(input.trim());
+  return DOMPurify.sanitize(input.trim());
 };
 
 const Login = () => {
@@ -34,6 +39,7 @@ const Login = () => {
   const [otpError, setOTPError] = useState("");
   const [loginData, setLoginData] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const recaptchaRef = useRef(null);
 
   const navigate = useNavigate();
@@ -57,8 +63,6 @@ const Login = () => {
     } else {
       setPasswordError("");
     }
-
-
 
     if (email.trim() === "" || !email.includes("@")) {
       setEmailError("Email is empty or invalid");
@@ -97,6 +101,7 @@ const Login = () => {
       return;
     }
 
+    setIsLoading(true);
     const data = {
       email: sanitizeInput(email),
       password: sanitizeInput(password),
@@ -123,13 +128,15 @@ const Login = () => {
           toast.error("CAPTCHA expired. Please refresh and try again.");
           if (recaptchaRef.current) {
             recaptchaRef.current.reset();
-            // recaptchaRef.current.execute();
           }
         } else {
           toast.error(
             error.response?.data?.message || "Login failed. Please try again."
           );
         }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -139,6 +146,7 @@ const Login = () => {
       return;
     }
 
+    setIsLoading(true);
     const verificationData = {
       ...loginData,
       otp: sanitizeInput(otp),
@@ -154,6 +162,9 @@ const Login = () => {
       })
       .catch((error) => {
         toast.error(error.response?.data?.message || "OTP verification failed");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -165,6 +176,7 @@ const Login = () => {
   };
 
   const handleResendOTP = () => {
+    setIsLoading(true);
     resendLoginOTPApi({ email: loginData.email })
       .then((res) => {
         if (res.data.success) {
@@ -175,6 +187,9 @@ const Login = () => {
       })
       .catch((error) => {
         toast.error("Failed to resend OTP");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -227,6 +242,7 @@ const Login = () => {
     ),
     []
   );
+
   const OTPInput = useCallback(() => (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
@@ -265,20 +281,40 @@ const Login = () => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleOTPVerification}
+          disabled={isLoading}
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 
                    text-white py-3 rounded-xl font-medium
                    hover:from-blue-700 hover:to-purple-700 
-                   transition-all duration-300"
+                   transition-all duration-300
+                   disabled:opacity-50 disabled:cursor-not-allowed
+                   flex items-center justify-center space-x-2"
         >
-          Verify OTP
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Verifying...</span>
+            </>
+          ) : (
+            <span>Verify OTP</span>
+          )}
         </motion.button>
 
         <button
           onClick={handleResendOTP}
+          disabled={isLoading}
           className="w-full text-blue-400 hover:text-blue-300 
-                   font-medium transition-colors py-2"
+                   font-medium transition-colors py-2
+                   disabled:opacity-50 disabled:cursor-not-allowed
+                   flex items-center justify-center space-x-2"
         >
-          Didn't receive the code? Resend
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Resending...</span>
+            </>
+          ) : (
+            <span>Didn't receive the code? Resend</span>
+          )}
         </button>
       </div>
     </div>
@@ -391,14 +427,22 @@ const Login = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit"
-                    disabled={!captchaToken}
+                    disabled={!captchaToken || isLoading}
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 
                              text-white py-3 rounded-xl font-medium
                              hover:from-blue-700 hover:to-purple-700 
                              transition-all duration-300
-                             disabled:opacity-50 disabled:cursor-not-allowed"
+                             disabled:opacity-50 disabled:cursor-not-allowed
+                             flex items-center justify-center space-x-2"
                   >
-                    Sign In
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>Signing in...</span>
+                      </>
+                    ) : (
+                      <span>Sign In</span>
+                    )}
                   </motion.button>
                 </form>
 
@@ -415,7 +459,7 @@ const Login = () => {
                 </div>
               </>
             ) : (
-            <OTPInput />
+              <OTPInput />
             )}
           </div>
 

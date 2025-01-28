@@ -7,19 +7,51 @@ import {
   editUserProfileApi,
 } from "../../apis/Api";
 import { toast } from "react-hot-toast";
-import { Camera, User, Mail, Phone, AtSign, Upload, Save } from "lucide-react";
+import { Camera, User, Mail, Phone, AtSign, Save } from "lucide-react";
+
+const InputField = ({
+  icon: Icon,
+  label,
+  name,
+  type = "text",
+  value,
+  onChange,
+}) => {
+  return (
+    <div className="relative">
+      <label className="block text-sm font-medium text-gray-300 mb-2">
+        {label}
+      </label>
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Icon className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type={type}
+          name={name}
+          defaultValue={value}
+          onBlur={onChange}
+          className="block w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+          placeholder={label}
+        />
+      </div>
+    </div>
+  );
+};
 
 const EditProfile = () => {
-  const [profile, setProfile] = useState({
+  const initialProfile = {
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
     username: "",
     profilePicture: null,
-  });
+  };
 
+  const [profile, setProfile] = useState(initialProfile);
   const [isLoading, setIsLoading] = useState(false);
+  const[profilePicture,setProfilePicture]=useState(null);
 
   useEffect(() => {
     getCurrentUserApi()
@@ -27,13 +59,14 @@ const EditProfile = () => {
         if (res.status === 200) {
           const userData = res.data.user;
           setProfile({
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            email: userData.email,
-            phoneNumber: userData.phoneNumber,
-            username: userData.userName,
-            profilePicture: userData.profilePicture,
+            firstName: userData.firstName || "",
+            lastName: userData.lastName || "",
+            email: userData.email || "",
+            phoneNumber: userData.phoneNumber || "",
+            username: userData.userName || "",
+            profilePicture: userData.profilePicture || null,
           });
+          setProfilePicture(userData.profilePicture);
         }
       })
       .catch((err) => {
@@ -44,7 +77,10 @@ const EditProfile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProfile({ ...profile, [name]: value });
+    setProfile((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleImageChange = (e) => {
@@ -58,7 +94,10 @@ const EditProfile = () => {
         .then((res) => {
           if (res.status === 200) {
             toast.success(res.data.message);
-            setProfile({ ...profile, profilePicture: res.data.profilePicture });
+            setProfile((prev) => ({
+              ...prev,
+              profilePicture: res.data.profilePicture,
+            }));
           } else {
             toast.error(res.data.message);
           }
@@ -76,7 +115,7 @@ const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     const updatedProfile = {
       firstName: profile.firstName,
       lastName: profile.lastName,
@@ -101,25 +140,6 @@ const EditProfile = () => {
     }
   };
 
-  const InputField = ({ icon: Icon, label, name, type = "text", value, onChange }) => (
-    <div className="relative">
-      <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Icon className="h-5 w-5 text-gray-400" />
-        </div>
-        <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          className="block w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm transition-all duration-300"
-          placeholder={label}
-        />
-      </div>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Navbar />
@@ -141,7 +161,7 @@ const EditProfile = () => {
                 <div className="relative group">
                   {profile.profilePicture ? (
                     <img
-                      src={`http://localhost:5000/profile_pictures/${profile.profilePicture}`}
+                      src={`https://localhost:5000/profile_pictures/${profile.profilePicture}`}
                       alt="Profile"
                       className="w-32 h-32 rounded-full object-cover border-4 border-gray-700 group-hover:border-blue-500 transition-all duration-300"
                     />
@@ -160,7 +180,9 @@ const EditProfile = () => {
                     />
                   </label>
                 </div>
-                <p className="text-sm text-gray-400">Click the camera icon to change your profile picture</p>
+                <p className="text-sm text-gray-400">
+                  Click the camera icon to change your profile picture
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-6">

@@ -103,8 +103,9 @@ export const resendLoginOTPApi = (data) =>
 export const getCurrentUserApi = () => Api.get("/api/user/current", config);
 export const editUserProfileApi = (data) =>
   Api.put("/api/user/update", data, config);
+
 export const uploadProfilePictureApi = (data) =>
-  Api.post("/api/user/profile_picture", data);
+  Api.post("/api/user/profile_picture", data,config);
 
 // Forgot Password
 export const forgotPasswordApi = (data) =>
@@ -117,10 +118,6 @@ export const getPasswordHistoryApi = (data) =>
 // Verify OTP
 export const verifyOtpApi = (data) => Api.post("/api/user/verify_otp", data);
 
-// Google Login
-export const googleLoginApi = (data) => Api.post("/api/user/google", data);
-export const getUserByGoogleEmail = (data) =>
-  Api.post(`/api/user/getGoogleUser`, data);
 
 //=========================== Product Apis ===========================
 

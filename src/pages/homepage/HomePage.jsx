@@ -6,8 +6,8 @@ import Hero from '../../components/Hero/Hero';
 import Products from '../Products/Products';
 import Banner from '../../components/Banner/Banner';
 import { 
-  ArrowRight, Battery, Wifi, Bluetooth, Headphones, 
-  Smartphone, Volume2, Music, Shield, Zap 
+  ArrowRight, Battery, Wifi, Headphones, 
+  Smartphone, Volume2, Shield,  
 } from 'lucide-react';
 import Footer from '../../components/footer/Footer';
 
