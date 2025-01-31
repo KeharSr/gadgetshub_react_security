@@ -25,12 +25,12 @@ const PaymentSuccess = () => {
       <div className="absolute w-4 h-4 bg-blue-500 rounded-full top-1/4 left-8 animate-float-1"></div>
       <div className="absolute w-4 h-4 bg-green-500 rounded-full top-3/4 right-8 animate-float-2"></div>
       <div className="absolute w-4 h-4 bg-yellow-500 rounded-full bottom-1/4 left-1/4 animate-float-3"></div>
-      
+
       {/* Main Card */}
       <div className="max-w-xl w-full bg-white rounded-2xl shadow-xl p-8 space-y-6 text-center relative">
         {/* Success Icon */}
         <div className="mb-8">
-          <div 
+          <div
             id="success-icon"
             className="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center transform scale-0 transition-all duration-700 relative"
           >
@@ -67,14 +67,14 @@ const PaymentSuccess = () => {
 
         {/* Action Buttons */}
         <div className="pt-6 space-y-4">
-          <a 
+          <a
             href="/homepage"
             className="block w-full px-6 py-2 text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors duration-200"
           >
             Continue Shopping
           </a>
-          
-          <a 
+
+          <a
             href="/myorder"
             className="block text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
           >
@@ -85,29 +85,57 @@ const PaymentSuccess = () => {
 
       <style jsx>{`
         @keyframes check {
-          from { transform: scale(0) rotate(-45deg); }
-          to { transform: scale(1) rotate(0); }
+          from {
+            transform: scale(0) rotate(-45deg);
+          }
+          to {
+            transform: scale(1) rotate(0);
+          }
         }
 
         @keyframes pulse-ring {
-          0% { transform: scale(0.8); opacity: 0.8; }
-          50% { transform: scale(1.1); opacity: 0.4; }
-          100% { transform: scale(0.8); opacity: 0.8; }
+          0% {
+            transform: scale(0.8);
+            opacity: 0.8;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 0.4;
+          }
+          100% {
+            transform: scale(0.8);
+            opacity: 0.8;
+          }
         }
 
         @keyframes float-1 {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          50% { transform: translate(20px, -20px) rotate(180deg); }
+          0%,
+          100% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate(20px, -20px) rotate(180deg);
+          }
         }
 
         @keyframes float-2 {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          50% { transform: translate(-20px, 20px) rotate(-180deg); }
+          0%,
+          100% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate(-20px, 20px) rotate(-180deg);
+          }
         }
 
         @keyframes float-3 {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          50% { transform: translate(15px, 15px) rotate(90deg); }
+          0%,
+          100% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate(15px, 15px) rotate(90deg);
+          }
         }
 
         .animate-check {
@@ -135,8 +163,14 @@ const PaymentSuccess = () => {
         }
 
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       `}</style>
     </div>

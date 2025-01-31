@@ -28,6 +28,54 @@ const sanitizeInput = (input) => {
   return DOMPurify.sanitize(input.trim());
 };
 
+const calculatePasswordStrength = (password) => {
+  let strength = 0;
+  if (password.length >= 8) strength += 1;
+  if (password.match(/[A-Z]/)) strength += 1;
+  if (password.match(/[a-z]/)) strength += 1;
+  if (password.match(/[0-9]/)) strength += 1;
+  if (password.match(/[^A-Za-z0-9]/)) strength += 1;
+  return strength;
+};
+
+const getPasswordStrengthColor = (strength) => {
+  switch (strength) {
+    case 0:
+      return "bg-gray-300";
+    case 1:
+      return "bg-red-500";
+    case 2:
+      return "bg-orange-500";
+    case 3:
+      return "bg-yellow-500";
+    case 4:
+      return "bg-blue-500";
+    case 5:
+      return "bg-green-500";
+    default:
+      return "bg-gray-300";
+  }
+};
+
+const getPasswordStrengthText = (strength) => {
+  switch (strength) {
+    case 0:
+      return "Too Short";
+    case 1:
+      return "Very Weak";
+    case 2:
+      return "Weak";
+    case 3:
+      return "Fair";
+    case 4:
+      return "Strong";
+    case 5:
+      return "Very Strong";
+    default:
+      return "Too Short";
+  }
+};
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,18 +112,6 @@ const Login = () => {
       setPasswordError("");
     }
 
-    if (email.trim() === "" || !email.includes("@")) {
-      setEmailError("Email is empty or invalid");
-      isValid = false;
-    } else {
-      setEmailError("");
-    }
-    if (password.trim() === "") {
-      setPasswordError("Password is empty");
-      isValid = false;
-    } else {
-      setPasswordError("");
-    }
     return isValid;
   };
 
@@ -193,6 +229,31 @@ const Login = () => {
       });
   };
 
+  const PasswordStrengthBar = ({ password }) => {
+    const strength = calculatePasswordStrength(password);
+    return (
+      <div className="mt-2">
+        <div className="flex justify-between mb-1">
+          <div className="flex space-x-1">
+            {[1, 2, 3, 4, 5].map((level) => (
+              <div
+                key={level}
+                className={`h-2 w-8 rounded-full transition-colors duration-300 ${
+                  level <= strength
+                    ? getPasswordStrengthColor(strength)
+                    : "bg-gray-700"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-sm text-gray-400">
+            {getPasswordStrengthText(strength)}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   const InputField = useCallback(
     ({
       icon: Icon,
@@ -207,37 +268,42 @@ const Login = () => {
       name,
     }) => (
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Icon className="h-5 w-5 text-blue-400" />
+        <div className="relative flex items-center">
+          <div className="absolute left-3 inset-y-0 flex items-center pointer-events-none">
+            <Icon className="h-5 w-5 text-blue-400" />
+          </div>
+          <input
+            type={isPassword ? (showPassword ? "text" : "password") : type}
+            className={`w-full pl-10 ${isPassword ? "pr-10" : "pr-4"} py-3 
+            bg-gray-800/50 border ${
+              error ? "border-red-500" : "border-gray-700"
+            } 
+            rounded-xl text-gray-300 placeholder-gray-500
+            focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+            backdrop-blur-sm transition-all duration-300`}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            name={name}
+            autoComplete="new-password"
+            style={{ caretColor: "white" }}
+          />
+          {isPassword && (
+            <button
+              type="button"
+              className="absolute right-3 inset-y-0 flex items-center"
+              onClick={onTogglePassword}
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-300" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-400 hover:text-gray-300" />
+              )}
+            </button>
+          )}
         </div>
-        <input
-          type={isPassword ? (showPassword ? "text" : "password") : type}
-          className={`w-full pl-10 ${isPassword ? "pr-10" : "pr-4"} py-3 
-        bg-gray-800/50 border ${error ? "border-red-500" : "border-gray-700"} 
-        rounded-xl text-gray-300 placeholder-gray-500
-        focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-        backdrop-blur-sm transition-all duration-300`}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          name={name}
-          autoComplete="new-password"
-          style={{ caretColor: "white" }}
-        />
-        {isPassword && (
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-            onClick={onTogglePassword}
-          >
-            {showPassword ? (
-              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-300" />
-            ) : (
-              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-300" />
-            )}
-          </button>
-        )}
         {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
+        {isPassword && <PasswordStrengthBar password={value} />}
       </div>
     ),
     []
@@ -429,11 +495,11 @@ const Login = () => {
                     type="submit"
                     disabled={!captchaToken || isLoading}
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 
-                             text-white py-3 rounded-xl font-medium
-                             hover:from-blue-700 hover:to-purple-700 
-                             transition-all duration-300
-                             disabled:opacity-50 disabled:cursor-not-allowed
-                             flex items-center justify-center space-x-2"
+                 text-white py-3 rounded-xl font-medium
+                 hover:from-blue-700 hover:to-purple-700 
+                 transition-all duration-300
+                 disabled:opacity-50 disabled:cursor-not-allowed
+                 flex items-center justify-center space-x-2"
                   >
                     {isLoading ? (
                       <>

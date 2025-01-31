@@ -50,6 +50,7 @@
     "react-spinners": "^0.15.0",
     "react-tabs": "^6.0.2",
     "react-toastify": "^10.0.5",
+    "serve": "^14.2.4",
     "slick-carousel": "^1.8.1",
     "stream-browserify": "^3.0.0",
     "tailwind-merge": "^2.4.0",
@@ -58,7 +59,8 @@
   },
   "scripts": {
     "start": "set HTTPS=true&&set SSL_CRT_FILE=./root.crt&&set SSL_KEY_FILE=./root.key&&react-scripts start",
-    "build": "react-scripts build",
+    "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
+    "deploy": "serve -s build --listen 3000 --ssl-cert ./root.crt --ssl-key ./root.key",
     "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!axios)/\"",
     "eject": "react-scripts eject"
   },

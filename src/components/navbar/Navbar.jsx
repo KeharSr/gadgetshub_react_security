@@ -2,7 +2,18 @@ import React, { useState, useEffect } from "react";
 import applogo from "../../assets/images/applogo.png";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShoppingCart, User, Menu, X, Headphones, Smartphone, Package, Heart, LogOut, Settings } from "lucide-react";
+import {
+  ShoppingCart,
+  User,
+  Menu,
+  X,
+  Headphones,
+  Smartphone,
+  Package,
+  Heart,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import { toast } from "react-hot-toast";
 import { getCurrentUserApi } from "../../apis/Api";
 
@@ -34,7 +45,7 @@ const Navbar = () => {
         }
       })
       .catch((err) => {
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           toast.error("Session expired. Please login again");
@@ -56,27 +67,21 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 120, damping: 20 }}
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled 
-          ? "bg-gray-900/95 backdrop-blur-lg border-b border-gray-800 shadow-lg" 
+      className={`fixed w-full z-50 transition-all duration-300  ${
+        scrolled
+          ? "bg-gray-900/95 backdrop-blur-lg border-b border-gray-800 shadow-lg"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center justify-start">
-            <img 
-              className="h-12 w-auto" 
-              src={applogo} 
-              alt="TechStore Logo" 
-            />
+            <img className="h-12 w-auto" src={applogo} alt="TechStore Logo" />
           </Link>
 
           <div className="hidden md:flex items-center space-x-1">
             <NavLink to="/homepage">
-              <span className="flex items-center space-x-1">
-                Home
-              </span>
+              <span className="flex items-center space-x-1">Home</span>
             </NavLink>
             <NavLink to="/Earbuds">
               <span className="flex items-center space-x-1">
@@ -108,7 +113,9 @@ const Navbar = () => {
               className="relative p-2 text-gray-400 hover:text-blue-400 transition-colors duration-200"
             >
               <ShoppingCart className="w-6 h-6" />
-              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                0
+              </span>
             </Link>
 
             <div className="relative">
@@ -213,7 +220,7 @@ const NavLink = ({ to, children, mobile }) => (
   >
     {children}
     {!mobile && (
-      <motion.span 
+      <motion.span
         className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         layoutId="navunderline"
       />
