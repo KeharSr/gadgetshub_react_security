@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
-import DOMPurify from "dompurify"; // Import DOMPurify for sanitization
+import DOMPurify from "dompurify";
 import { createProductApi } from "../../apis/Api";
 import { motion } from "framer-motion";
 import { Camera, Package, DollarSign, Hash, FileText } from "lucide-react";
 
-// Function to sanitize inputs and disallow any HTML tags
+// Modified sanitization function to preserve spaces while still sanitizing HTML
 const sanitizeInput = (input) => {
-  return DOMPurify.sanitize(input.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  if (!input) return "";
+  // First sanitize to remove any HTML tags
+  const sanitized = DOMPurify.sanitize(input, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+  });
+  // Then trim only leading and trailing spaces, preserve spaces in between
+  return sanitized.trim();
 };
 
 const AddProduct = () => {
@@ -41,9 +48,12 @@ const AddProduct = () => {
     sanitizedFormData.append("productName", sanitizeInput(productName));
     sanitizedFormData.append("productPrice", sanitizeInput(productPrice));
     sanitizedFormData.append("productCategory", sanitizeInput(productCategory));
-    sanitizedFormData.append("productDescription", sanitizeInput(productDescription));
+    sanitizedFormData.append(
+      "productDescription",
+      sanitizeInput(productDescription)
+    );
     sanitizedFormData.append("productQuantity", sanitizeInput(productQuantity));
-    sanitizedFormData.append("productImage", productImage); // Files don't require sanitization
+    sanitizedFormData.append("productImage", productImage);
 
     createProductApi(sanitizedFormData)
       .then((res) => {
@@ -90,7 +100,7 @@ const AddProduct = () => {
               type="text"
               placeholder="Enter product name"
               value={productName}
-              onChange={(e) => setProductName(sanitizeInput(e.target.value))}
+              onChange={(e) => setProductName(e.target.value)}
             />
           </motion.div>
           <motion.div whileHover={{ scale: 1.02 }} className="col-span-1">
@@ -105,7 +115,7 @@ const AddProduct = () => {
               className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
               id="productCategory"
               value={productCategory}
-              onChange={(e) => setProductCategory(sanitizeInput(e.target.value))}
+              onChange={(e) => setProductCategory(e.target.value)}
             >
               <option value="" disabled>
                 Select Category
@@ -129,7 +139,7 @@ const AddProduct = () => {
             type="text"
             placeholder="Enter product price"
             value={productPrice}
-            onChange={(e) => setProductPrice(sanitizeInput(e.target.value))}
+            onChange={(e) => setProductPrice(e.target.value)}
           />
         </motion.div>
         <motion.div whileHover={{ scale: 1.02 }}>
@@ -146,7 +156,7 @@ const AddProduct = () => {
             type="text"
             placeholder="Enter product quantity"
             value={productQuantity}
-            onChange={(e) => setProductQuantity(sanitizeInput(e.target.value))}
+            onChange={(e) => setProductQuantity(e.target.value)}
           />
         </motion.div>
         <motion.div whileHover={{ scale: 1.02 }}>
@@ -163,7 +173,7 @@ const AddProduct = () => {
             rows="5"
             placeholder="Enter product description"
             value={productDescription}
-            onChange={(e) => setProductDescription(sanitizeInput(e.target.value))}
+            onChange={(e) => setProductDescription(e.target.value)}
           />
         </motion.div>
         <motion.div whileHover={{ scale: 1.02 }} className="relative">

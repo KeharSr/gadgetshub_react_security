@@ -2,13 +2,20 @@ import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { updateProduct, getSingleProductApi } from "../../apis/Api";
 import { toast } from "react-hot-toast";
-import DOMPurify from "dompurify"; // Import DOMPurify for sanitization
+import DOMPurify from "dompurify";
 
 Modal.setAppElement("#root");
 
-// Function to sanitize inputs and disallow any HTML tags
+// Modified sanitization function to preserve spaces while still sanitizing HTML
 const sanitizeInput = (input) => {
-  return DOMPurify.sanitize(input.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  if (!input) return "";
+  // First sanitize to remove any HTML tags
+  const sanitized = DOMPurify.sanitize(input, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+  });
+  // Then trim only leading and trailing spaces, preserve spaces in between
+  return sanitized.trim();
 };
 
 const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
@@ -26,11 +33,11 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
       getSingleProductApi(productId)
         .then((res) => {
           const product = res.data.product;
-          setProductName(sanitizeInput(product.productName));
-          setProductPrice(sanitizeInput(product.productPrice.toString()));
-          setProductCategory(sanitizeInput(product.productCategory));
-          setProductQuantity(sanitizeInput(product.productQuantity.toString()));
-          setProductDescription(sanitizeInput(product.productDescription));
+          setProductName(product.productName);
+          setProductPrice(product.productPrice.toString());
+          setProductCategory(product.productCategory);
+          setProductQuantity(product.productQuantity.toString());
+          setProductDescription(product.productDescription);
           setOldImage(product.productImage);
         })
         .catch((error) => {
@@ -56,7 +63,7 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
     formData.append("productQuantity", sanitizeInput(productQuantity));
     formData.append("productDescription", sanitizeInput(productDescription));
     if (productNewImage) {
-      formData.append("productImage", productNewImage); // File input does not require sanitization
+      formData.append("productImage", productNewImage);
     }
 
     updateProduct(productId, formData)
@@ -69,7 +76,9 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
       })
       .catch((error) => {
         console.error(error);
-        toast.error(error.response?.data?.message || "Failed to update product.");
+        toast.error(
+          error.response?.data?.message || "Failed to update product."
+        );
       });
   };
 
@@ -91,7 +100,7 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
             <input
               type="text"
               value={productName}
-              onChange={(e) => setProductName(sanitizeInput(e.target.value))}
+              onChange={(e) => setProductName(e.target.value)}
               className="w-full px-3 py-2 border rounded"
               required
             />
@@ -102,7 +111,7 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
             </label>
             <select
               value={productCategory}
-              onChange={(e) => setProductCategory(sanitizeInput(e.target.value))}
+              onChange={(e) => setProductCategory(e.target.value)}
               className="w-full px-3 py-2 border rounded"
               required
             >
@@ -118,7 +127,7 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
           <input
             type="number"
             value={productPrice}
-            onChange={(e) => setProductPrice(sanitizeInput(e.target.value))}
+            onChange={(e) => setProductPrice(e.target.value)}
             className="w-full px-3 py-2 border rounded"
             required
           />
@@ -129,7 +138,7 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
           </label>
           <textarea
             value={productDescription}
-            onChange={(e) => setProductDescription(sanitizeInput(e.target.value))}
+            onChange={(e) => setProductDescription(e.target.value)}
             className="w-full px-3 py-2 border rounded"
             required
           />
@@ -141,7 +150,7 @@ const UpdateProduct = ({ isOpen, onRequestClose, productId, onUpdate }) => {
           <input
             type="number"
             value={productQuantity}
-            onChange={(e) => setProductQuantity(sanitizeInput(e.target.value))}
+            onChange={(e) => setProductQuantity(e.target.value)}
             className="w-full px-3 py-2 border rounded"
             required
           />
