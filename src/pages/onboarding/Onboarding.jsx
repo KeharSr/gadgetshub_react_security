@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getAllProductsApi } from "../../apis/Api";
 import Hero from '../../components/Hero/Hero';
-import Products from '../Products/Products';
 import Banner from '../../components/Banner/Banner';
 import { 
   ArrowRight, Battery, Wifi, Bluetooth, Headphones, 
